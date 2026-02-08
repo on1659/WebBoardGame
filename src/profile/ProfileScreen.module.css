@@ -1,0 +1,219 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.title {
+  font-size: clamp(28px, 6vw, 44px);
+  text-align: center;
+  animation: bounce 3s ease infinite;
+}
+
+.subtitle {
+  font-size: 22px;
+  color: #666;
+}
+
+.loadingText {
+  font-size: 28px;
+  animation: pulse 1.5s ease infinite;
+}
+
+/* Profile grid */
+.profileGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 20px;
+  background: white;
+  border-radius: 20px;
+  border: 4px solid #a8d5ba;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 120px;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.4s ease-out both;
+}
+
+.profileCard:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.profileCard:active {
+  transform: scale(0.95);
+}
+
+.newProfile {
+  border-color: #f8bbd9;
+  background: #fff5f8;
+}
+
+.avatar {
+  font-size: 48px;
+}
+
+.profileName {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Name input */
+.nameSection {
+  width: 100%;
+  text-align: center;
+}
+
+.label {
+  font-size: 22px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.nameInput {
+  font-size: 28px;
+  padding: 12px 20px;
+  border: 4px solid #a8d5ba;
+  border-radius: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  outline: none;
+}
+
+.nameInput:focus {
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 4px rgba(102,187,106,0.2);
+}
+
+/* PIN */
+.pinSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.pinDisplay {
+  display: flex;
+  gap: 12px;
+  font-size: 36px;
+}
+
+.pinDot {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f0f0f0;
+  transition: all 0.2s;
+}
+
+.filled {
+  background: #fff9c4;
+  transform: scale(1.1);
+}
+
+.numGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 280px;
+  width: 100%;
+}
+
+.numBtn {
+  font-size: 32px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 3px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.numBtn:hover {
+  background: #e3f2fd;
+  border-color: #90caf9;
+}
+
+.numBtn:active {
+  transform: scale(0.9);
+  background: #bbdefb;
+}
+
+.confirmBtn {
+  background: #c8e6c9;
+  border-color: #66bb6a;
+}
+
+.confirmBtn:hover {
+  background: #a5d6a7;
+}
+
+.error {
+  color: #e53935;
+  font-size: 18px;
+  font-weight: bold;
+  animation: shake 0.4s ease;
+}
+
+.backBtn {
+  font-size: 20px;
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 3px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.backBtn:hover {
+  background: #f5f5f5;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}

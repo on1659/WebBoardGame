@@ -38,11 +38,20 @@ const games = [
   },
 ];
 
-export default function HomeScreen({ onSelectGame }) {
+export default function HomeScreen({ profileName, onSelectGame, onLogout, onShowProgress }) {
   return (
     <div className={styles.container}>
+      <div className={styles.topBar}>
+        <button className={styles.progressButton} onClick={onShowProgress}>
+          📊 진행도
+        </button>
+        <button className={styles.logoutButton} onClick={onLogout}>
+          👋 다른 친구
+        </button>
+      </div>
+
       <h1 className={styles.title}>🎲 보드게임 세상 🎲</h1>
-      <p className={styles.subtitle}>어떤 게임을 할까요?</p>
+      <p className={styles.subtitle}>안녕, <strong>{profileName}</strong>! 어떤 게임을 할까요? 😊</p>
 
       <div className={styles.gameGrid}>
         {games.map((game, index) => (
