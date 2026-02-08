@@ -3,15 +3,29 @@ import { useUser } from '../profile/UserContext';
 import styles from './Leaderboard.module.css';
 
 const GAMES = [
-  { id: 'memory', name: '🃏 메모리', metric: 'moves', unit: '번', lower: true },
-  { id: 'memory_time', name: '🃏 메모리(시간)', metric: 'time', unit: '초', lower: true },
-  { id: 'sudoku', name: '🧩 스도쿠', metric: 'time', unit: '초', lower: true },
-  { id: 'minesweeper', name: '💣 지뢰찾기', metric: 'time', unit: '초', lower: true },
-  { id: 'chess', name: '♟️ 체스', metric: 'wins', unit: '승', lower: false },
-  { id: 'gomoku', name: '⚫ 오목', metric: 'wins', unit: '승', lower: false },
-  { id: 'othello', name: '🟢 오델로', metric: 'wins', unit: '승', lower: false },
-  { id: 'connect4', name: '🔴 사목', metric: 'wins', unit: '승', lower: false },
-  { id: 'tictactoe', name: '❌ 틱택토', metric: 'wins', unit: '승', lower: false },
+  // 카드 짝맞추기
+  { id: 'memory_easy', name: '🃏 카드짝맞추기 쉬움', metric: 'moves', unit: '번', lower: true },
+  { id: 'memory_medium', name: '🃏 카드짝맞추기 보통', metric: 'moves', unit: '번', lower: true },
+  { id: 'memory_hard', name: '🃏 카드짝맞추기 어려움', metric: 'moves', unit: '번', lower: true },
+  // 스도쿠
+  { id: 'sudoku_easy', name: '🧩 스도쿠 쉬움', metric: 'time', unit: '초', lower: true },
+  { id: 'sudoku_medium', name: '🧩 스도쿠 보통', metric: 'time', unit: '초', lower: true },
+  // 지뢰찾기
+  { id: 'minesweeper_easy', name: '💣 지뢰찾기 쉬움', metric: 'time', unit: '초', lower: true },
+  { id: 'minesweeper_medium', name: '💣 지뢰찾기 보통', metric: 'time', unit: '초', lower: true },
+  { id: 'minesweeper_hard', name: '💣 지뢰찾기 어려움', metric: 'time', unit: '초', lower: true },
+  // 대전 게임
+  { id: 'chess_easy', name: '♟️ 체스 쉬움', metric: 'wins', unit: '승', lower: false },
+  { id: 'chess_normal', name: '♟️ 체스 보통', metric: 'wins', unit: '승', lower: false },
+  { id: 'chess_hard', name: '♟️ 체스 어려움', metric: 'wins', unit: '승', lower: false },
+  { id: 'gomoku_easy', name: '⚫ 오목 쉬움', metric: 'wins', unit: '승', lower: false },
+  { id: 'gomoku_medium', name: '⚫ 오목 보통', metric: 'wins', unit: '승', lower: false },
+  { id: 'othello_easy', name: '🟢 오델로 쉬움', metric: 'wins', unit: '승', lower: false },
+  { id: 'othello_medium', name: '🟢 오델로 보통', metric: 'wins', unit: '승', lower: false },
+  { id: 'connect4_easy', name: '🔴 사목 쉬움', metric: 'wins', unit: '승', lower: false },
+  { id: 'connect4_medium', name: '🔴 사목 보통', metric: 'wins', unit: '승', lower: false },
+  { id: 'tictactoe_easy', name: '❌ 틱택토 쉬움', metric: 'wins', unit: '승', lower: false },
+  { id: 'tictactoe_medium', name: '❌ 틱택토 보통', metric: 'wins', unit: '승', lower: false },
 ];
 
 const MEDALS = ['🥇','🥈','🥉'];

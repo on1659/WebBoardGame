@@ -11,6 +11,7 @@ import MemoryGame from './games/memory/MemoryGame';
 import SudokuGame from './games/sudoku/SudokuGame';
 import MinesweeperGame from './games/minesweeper/MinesweeperGame';
 import Leaderboard from './components/Leaderboard';
+import StatsPage from './components/StatsPage';
 import { useState, useCallback } from 'react';
 
 function AppInner() {
@@ -19,12 +20,14 @@ function AppInner() {
   const [showProgress, setShowProgress] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   const handleBack = useCallback(() => {
     setCurrentGame(null);
     setShowProgress(false);
     setShowLogin(false);
     setShowLeaderboard(false);
+    setShowStats(false);
   }, []);
 
   const handleLogout = useCallback(() => {
@@ -64,6 +67,10 @@ function AppInner() {
 
   if (showProgress && user) {
     return <ProgressPage profileName={user.name} userId={user.id} onBack={handleBack} />;
+  }
+
+  if (showStats) {
+    return <StatsPage onBack={handleBack} />;
   }
 
   if (showLeaderboard) {
@@ -119,6 +126,7 @@ function AppInner() {
       onShowProgress={handleShowProgress}
       onLogin={() => setShowLogin(true)}
       onShowLeaderboard={() => setShowLeaderboard(true)}
+      onShowStats={() => setShowStats(true)}
       isLoggedIn={!!user}
     />
   );

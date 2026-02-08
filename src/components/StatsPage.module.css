@@ -1,0 +1,196 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  padding: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.backBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 1rem;
+  background: white;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.backBtn:hover { transform: scale(1.05); }
+
+.title {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 4rem 0;
+}
+
+.overviewCards {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.overviewCard {
+  flex: 1;
+  min-width: 140px;
+  padding: 1rem;
+  border-radius: 1rem;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.overviewEmoji { font-size: 2rem; }
+.overviewValue { font-size: 1.4rem; font-weight: bold; }
+.overviewLabel { font-size: 0.8rem; opacity: 0.9; }
+
+.chartSection, .gameCardsSection, .userSection {
+  background: rgba(255,255,255,0.9);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.barChart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.barLabel {
+  width: 120px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.barTrack {
+  flex: 1;
+  height: 28px;
+  background: #e8e8e8;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  min-width: 30px;
+  transition: width 0.6s ease;
+}
+
+.barValue {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.gameCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.gameCard {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 2px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+
+.gameCard:hover { transform: translateY(-2px); }
+
+.gameCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.gameCardEmoji { font-size: 1.5rem; }
+.gameCardName { font-weight: 700; font-size: 1rem; color: #333; }
+
+.gameCardStats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.statLabel { color: #888; }
+.statValue { font-weight: 600; color: #333; }
+
+.winRateBar {
+  margin-top: 0.5rem;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.winRateFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  font-size: 1.1rem;
+  color: #666;
+  background: rgba(255,255,255,0.9);
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.empty p { margin: 0.5rem 0; }
+
+@media (max-width: 480px) {
+  .overviewCards { flex-direction: column; }
+  .barLabel { width: 80px; font-size: 0.75rem; }
+  .gameCards { grid-template-columns: 1fr; }
+}

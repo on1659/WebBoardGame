@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { fetchProgress, loadGame } from './profile/api';
 import styles from './HomeScreen.module.css';
 
-export default function HomeScreen({ profileName, userId, onSelectGame, onLogout, onShowProgress, onLogin, onShowLeaderboard, isLoggedIn }) {
+export default function HomeScreen({ profileName, userId, onSelectGame, onLogout, onShowProgress, onLogin, onShowLeaderboard, onShowStats, isLoggedIn }) {
   const [chessDesc, setChessDesc] = useState('말을 움직여서 왕을 잡아요!');
   const [savedGames, setSavedGames] = useState(new Set());
 
@@ -48,6 +48,9 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
             <button className={styles.progressButton} onClick={onShowLeaderboard}>
               🏆 순위
             </button>
+            <button className={styles.progressButton} onClick={onShowStats}>
+              📊 통계
+            </button>
             <button className={styles.logoutButton} onClick={onLogout}>
               👋 다른 친구
             </button>
@@ -56,6 +59,9 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
           <>
             <button className={styles.progressButton} onClick={onShowLeaderboard}>
               🏆 순위
+            </button>
+            <button className={styles.progressButton} onClick={onShowStats}>
+              📊 통계
             </button>
             <button className={styles.loginButton} onClick={onLogin}>
               🔑 로그인
