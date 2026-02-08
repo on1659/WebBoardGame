@@ -59,17 +59,17 @@ export default function StatsPage({ onBack }) {
 
       {/* Overall Stats */}
       <div className={styles.overviewCards}>
-        <div className={styles.overviewCard} style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+        <div className={styles.overviewCard}>
           <span className={styles.overviewEmoji}>🎮</span>
           <span className={styles.overviewValue}>{stats?.totalPlays || 0}</span>
           <span className={styles.overviewLabel}>총 플레이 횟수</span>
         </div>
-        <div className={styles.overviewCard} style={{ background: 'linear-gradient(135deg, #f093fb, #f5576c)' }}>
+        <div className={styles.overviewCard}>
           <span className={styles.overviewEmoji}>👥</span>
           <span className={styles.overviewValue}>{stats?.totalUsers || 0}</span>
           <span className={styles.overviewLabel}>총 플레이어 수</span>
         </div>
-        <div className={styles.overviewCard} style={{ background: 'linear-gradient(135deg, #4facfe, #00f2fe)' }}>
+        <div className={styles.overviewCard}>
           <span className={styles.overviewEmoji}>🏆</span>
           <span className={styles.overviewValue}>
             {stats?.mostPopular ? `${GAME_INFO[stats.mostPopular]?.emoji || ''} ${GAME_INFO[stats.mostPopular]?.name || stats.mostPopular}` : '-'}
@@ -90,7 +90,7 @@ export default function StatsPage({ onBack }) {
                 <div key={g.game_type} className={styles.barRow}>
                   <span className={styles.barLabel}>{info.emoji} {info.name}</span>
                   <div className={styles.barTrack}>
-                    <div className={styles.barFill} style={{ width: `${pct}%` }}>
+                    <div className={styles.barFill} data-game={g.game_type} style={{ width: `${pct}%` }}>
                       <span className={styles.barValue}>{g.play_count}</span>
                     </div>
                   </div>
