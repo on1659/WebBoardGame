@@ -1,16 +1,35 @@
-import { getTotalProgress, getCompletedTutorials, getCompletedPuzzles } from '../games/chess/progress';
+import { useState, useEffect } from 'react';
+import { fetchProgress } from './api';
 import { lessons } from '../games/chess/tutorial/lessonData';
 import { puzzles } from '../games/chess/puzzles/puzzleData';
 import styles from './ProgressPage.module.css';
 
-export default function ProgressPage({ profileName, onBack }) {
-  const progress = getTotalProgress();
-  const completedTuts = getCompletedTutorials();
-  const completedPuzz = getCompletedPuzzles();
+export default function ProgressPage({ profileName, userId, onBack }) {
+  const [completedTuts, setCompletedTuts] = useState([]);
+  const [completedPuzz, setCompletedPuzz] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const totalDone = progress.tutorialsCompleted + progress.puzzlesCompleted;
-  const totalAll = progress.tutorialsTotal + progress.puzzlesTotal;
+  useEffect(() => {
+    fetchProgress(userId).then(rows => {
+      setCompletedTuts(rows.filter(r => r.stage_type === 'tutorial').map(r => parseInt(r.stage_id)));
+      setCompletedPuzz(rows.filter(r => r.stage_type === 'puzzle').map(r => parseInt(r.stage_id)));
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [userId]);
+
+  const tutTotal = lessons.length;
+  const puzzTotal = puzzles.length;
+  const totalDone = completedTuts.length + completedPuzz.length;
+  const totalAll = tutTotal + puzzTotal;
   const percent = totalAll > 0 ? Math.round((totalDone / totalAll) * 100) : 0;
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <p style={{ fontSize: '24px' }}>로딩 중... ⏳</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -51,11 +70,11 @@ export default function ProgressPage({ profileName, onBack }) {
         <div className={styles.puzzleBar}>
           <div
             className={styles.puzzleFill}
-            style={{ width: `${progress.puzzlesTotal > 0 ? (progress.puzzlesCompleted / progress.puzzlesTotal) * 100 : 0}%` }}
+            style={{ width: `${puzzTotal > 0 ? (completedPuzz.length / puzzTotal) * 100 : 0}%` }}
           />
         </div>
         <p className={styles.puzzleText}>
-          {progress.puzzlesCompleted}/{progress.puzzlesTotal} 퍼즐 해결!
+          {completedPuzz.length}/{puzzTotal} 퍼즐 해결!
         </p>
       </div>
       <div className={styles.puzzleGrid}>

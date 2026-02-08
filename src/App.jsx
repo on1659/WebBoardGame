@@ -1,39 +1,33 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useUser } from './profile/UserContext';
+import { UserProvider, useUser } from './profile/UserContext';
 import ProfileScreen from './profile/ProfileScreen';
 import HomeScreen from './HomeScreen';
+import ProgressPage from './profile/ProgressPage';
 import ChessGame from './games/chess/ChessGame';
 import GomokuGame from './games/gomoku/GomokuGame';
-import { loadProgressFromServer } from './games/chess/progress';
+import { useState, useCallback } from 'react';
 
-export default function App() {
+function AppInner() {
   const { user, logout } = useUser();
   const [currentGame, setCurrentGame] = useState(null);
-  const [progressLoaded, setProgressLoaded] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setProgressLoaded(false);
-      loadProgressFromServer(user.id).then(() => setProgressLoaded(true));
-    } else {
-      setProgressLoaded(false);
-    }
-  }, [user]);
-
-  const handleSelectGame = useCallback((gameId) => {
-    setCurrentGame(gameId);
-  }, []);
+  const [showProgress, setShowProgress] = useState(false);
 
   const handleBack = useCallback(() => {
     setCurrentGame(null);
+    setShowProgress(false);
   }, []);
+
+  const handleLogout = useCallback(() => {
+    logout();
+    setCurrentGame(null);
+    setShowProgress(false);
+  }, [logout]);
 
   if (!user) {
     return <ProfileScreen />;
   }
 
-  if (!progressLoaded) {
-    return <div style={{ textAlign: 'center', padding: 40, fontSize: 28 }}>불러오는 중... ⏳</div>;
+  if (showProgress) {
+    return <ProgressPage profileName={user.name} userId={user.id} onBack={handleBack} />;
   }
 
   if (currentGame === 'chess') {
@@ -44,5 +38,21 @@ export default function App() {
     return <GomokuGame onBack={handleBack} />;
   }
 
-  return <HomeScreen onSelectGame={handleSelectGame} user={user} onLogout={logout} />;
+  return (
+    <HomeScreen
+      profileName={user.name}
+      userId={user.id}
+      onSelectGame={setCurrentGame}
+      onLogout={handleLogout}
+      onShowProgress={() => setShowProgress(true)}
+    />
+  );
+}
+
+export default function App() {
+  return (
+    <UserProvider>
+      <AppInner />
+    </UserProvider>
+  );
 }

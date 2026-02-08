@@ -1,59 +1,68 @@
-// Chess learning progress — API backed with localStorage cache
-import { fetchProgress, saveProgress as apiSaveProgress } from '../../profile/api';
+// Chess learning progress — PostgreSQL backed via API
+// Uses a simple in-memory cache per session, synced with server
 
-let currentUserId = null;
-let cachedProgress = { tutorials: [], puzzles: [] };
+import { fetchProgress, saveProgress as apiSave } from '../../profile/api';
 
-export function setProgressUser(userId) {
-  currentUserId = userId;
+let _cache = null; // { userId, tutorials: [], puzzles: [] }
+
+function ensureCache() {
+  if (!_cache) _cache = { userId: null, tutorials: [], puzzles: [] };
+  return _cache;
 }
 
-export async function loadProgressFromServer(userId) {
-  currentUserId = userId;
+// Call this when user logs in to load their progress
+export async function loadProgress(userId) {
   try {
     const rows = await fetchProgress(userId);
-    cachedProgress = { tutorials: [], puzzles: [] };
-    for (const r of rows) {
-      if (r.stage_type === 'tutorial') cachedProgress.tutorials.push(r.stage_id);
-      else if (r.stage_type === 'puzzle') cachedProgress.puzzles.push(r.stage_id);
-    }
+    _cache = {
+      userId,
+      tutorials: rows.filter(r => r.stage_type === 'tutorial').map(r => parseInt(r.stage_id)),
+      puzzles: rows.filter(r => r.stage_type === 'puzzle').map(r => parseInt(r.stage_id)),
+    };
   } catch {
-    cachedProgress = { tutorials: [], puzzles: [] };
+    _cache = { userId, tutorials: [], puzzles: [] };
   }
-  return cachedProgress;
+  return _cache;
 }
 
-export function completeTutorial(lessonId) {
-  if (!cachedProgress.tutorials.includes(lessonId)) {
-    cachedProgress.tutorials.push(lessonId);
+export function clearProgressCache() {
+  _cache = null;
+}
+
+export async function completeTutorial(lessonId) {
+  const c = ensureCache();
+  if (!c.tutorials.includes(lessonId)) {
+    c.tutorials.push(lessonId);
   }
-  if (currentUserId) {
-    apiSaveProgress(currentUserId, 'tutorial', lessonId, 1).catch(() => {});
+  if (c.userId) {
+    try { await apiSave(c.userId, 'tutorial', String(lessonId), 1); } catch {}
   }
 }
 
-export function completePuzzle(puzzleId) {
-  if (!cachedProgress.puzzles.includes(puzzleId)) {
-    cachedProgress.puzzles.push(puzzleId);
+export async function completePuzzle(puzzleId) {
+  const c = ensureCache();
+  if (!c.puzzles.includes(puzzleId)) {
+    c.puzzles.push(puzzleId);
   }
-  if (currentUserId) {
-    apiSaveProgress(currentUserId, 'puzzle', puzzleId, 1).catch(() => {});
+  if (c.userId) {
+    try { await apiSave(c.userId, 'puzzle', String(puzzleId), 1); } catch {}
   }
 }
 
 export function getCompletedTutorials() {
-  return cachedProgress.tutorials;
+  return ensureCache().tutorials;
 }
 
 export function getCompletedPuzzles() {
-  return cachedProgress.puzzles;
+  return ensureCache().puzzles;
 }
 
 export function getTotalProgress() {
+  const c = ensureCache();
   return {
-    tutorialsCompleted: cachedProgress.tutorials.length,
+    tutorialsCompleted: c.tutorials.length,
     tutorialsTotal: 6,
-    puzzlesCompleted: cachedProgress.puzzles.length,
+    puzzlesCompleted: c.puzzles.length,
     puzzlesTotal: 10,
   };
 }
