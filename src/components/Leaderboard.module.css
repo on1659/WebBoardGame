@@ -1,0 +1,91 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 0.4s ease;
+}
+.topBar {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+}
+.backBtn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+}
+.title { font-size: 28px; margin: 0; }
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+}
+.tab {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab:hover { background: #f5f5f5; }
+.activeTab {
+  background: linear-gradient(135deg, #ffd93d, #ff9800) !important;
+  color: white;
+  border-color: transparent;
+  font-weight: bold;
+}
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.myRow {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border: 2px solid #42a5f5;
+}
+.rank {
+  font-size: 22px;
+  font-weight: bold;
+  min-width: 36px;
+  text-align: center;
+}
+.name {
+  flex: 1;
+  font-size: 18px;
+  font-weight: bold;
+}
+.score {
+  font-size: 16px;
+  color: #555;
+  font-weight: bold;
+}
+.empty {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+  padding: 40px 0;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

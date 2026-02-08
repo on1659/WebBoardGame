@@ -30,6 +30,14 @@ async function initDB() {
       updated_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(user_id, game_type)
     );
+    CREATE TABLE IF NOT EXISTS leaderboard (
+      id SERIAL PRIMARY KEY,
+      user_id INT REFERENCES users(id) ON DELETE CASCADE,
+      game_type TEXT NOT NULL,
+      score NUMERIC NOT NULL,
+      metric_type TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
     CREATE TABLE IF NOT EXISTS progress (
       id SERIAL PRIMARY KEY,
       user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -160,6 +168,73 @@ app.delete('/api/game-save/:userId/:gameType', async (req, res) => {
       [req.params.userId, req.params.gameType]
     );
     res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// --- Leaderboard ---
+app.post('/api/leaderboard', async (req, res) => {
+  const { user_id, game_type, score, metric_type } = req.body;
+  if (!user_id || !game_type || score == null || !metric_type) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    // For 'moves' and 'time', keep best (lowest). For 'wins' and 'score', keep best (highest).
+    const lowerBetter = ['moves', 'time'].includes(metric_type);
+    const existing = await pool.query(
+      'SELECT id, score FROM leaderboard WHERE user_id=$1 AND game_type=$2',
+      [user_id, game_type]
+    );
+    if (existing.rows.length > 0) {
+      const old = Number(existing.rows[0].score);
+      const shouldUpdate = lowerBetter ? score < old : score > old;
+      if (shouldUpdate) {
+        const { rows } = await pool.query(
+          'UPDATE leaderboard SET score=$1, created_at=NOW() WHERE id=$2 RETURNING *',
+          [score, existing.rows[0].id]
+        );
+        return res.json(rows[0]);
+      }
+      return res.json(existing.rows[0]);
+    }
+    const { rows } = await pool.query(
+      'INSERT INTO leaderboard (user_id, game_type, score, metric_type) VALUES ($1,$2,$3,$4) RETURNING *',
+      [user_id, game_type, score, metric_type]
+    );
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/leaderboard/:gameType', async (req, res) => {
+  try {
+    const gt = req.params.gameType;
+    // Determine sort order from first entry or default
+    const sample = await pool.query('SELECT metric_type FROM leaderboard WHERE game_type=$1 LIMIT 1', [gt]);
+    const metric = sample.rows[0]?.metric_type || 'time';
+    const order = ['moves','time'].includes(metric) ? 'ASC' : 'DESC';
+    const { rows } = await pool.query(
+      `SELECT l.id, l.user_id, u.name as user_name, l.score, l.metric_type, l.created_at
+       FROM leaderboard l JOIN users u ON l.user_id = u.id
+       WHERE l.game_type=$1 ORDER BY l.score ${order} LIMIT 10`,
+      [gt]
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/leaderboard/user/:userId', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT l.game_type, l.score, l.metric_type, l.created_at
+       FROM leaderboard l WHERE l.user_id=$1 ORDER BY l.game_type`,
+      [req.params.userId]
+    );
+    res.json(rows);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

@@ -51,3 +51,22 @@ export async function loadGame(userId, gameType) {
 export async function deleteGame(userId, gameType) {
   await fetch(`${API}/game-save/${userId}/${gameType}`, { method: 'DELETE' });
 }
+
+export async function submitScore(userId, gameType, score, metricType) {
+  const res = await fetch(`${API}/leaderboard`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: userId, game_type: gameType, score, metric_type: metricType }),
+  });
+  return res.json();
+}
+
+export async function fetchLeaderboard(gameType) {
+  const res = await fetch(`${API}/leaderboard/${gameType}`);
+  return res.json();
+}
+
+export async function fetchUserScores(userId) {
+  const res = await fetch(`${API}/leaderboard/user/${userId}`);
+  return res.json();
+}

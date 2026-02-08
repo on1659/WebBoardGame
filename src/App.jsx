@@ -7,6 +7,10 @@ import GomokuGame from './games/gomoku/GomokuGame';
 import OthelloGame from './games/othello/OthelloGame';
 import Connect4Game from './games/connect4/Connect4Game';
 import TicTacToeGame from './games/tictactoe/TicTacToeGame';
+import MemoryGame from './games/memory/MemoryGame';
+import SudokuGame from './games/sudoku/SudokuGame';
+import MinesweeperGame from './games/minesweeper/MinesweeperGame';
+import Leaderboard from './components/Leaderboard';
 import { useState, useCallback } from 'react';
 
 function AppInner() {
@@ -14,11 +18,13 @@ function AppInner() {
   const [currentGame, setCurrentGame] = useState(null);
   const [showProgress, setShowProgress] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const handleBack = useCallback(() => {
     setCurrentGame(null);
     setShowProgress(false);
     setShowLogin(false);
+    setShowLeaderboard(false);
   }, []);
 
   const handleLogout = useCallback(() => {
@@ -60,6 +66,25 @@ function AppInner() {
     return <ProgressPage profileName={user.name} userId={user.id} onBack={handleBack} />;
   }
 
+  if (showLeaderboard) {
+    return <Leaderboard onBack={handleBack} />;
+  }
+
+  if (currentGame === 'memory') {
+    if (!user) { setShowLogin(true); return null; }
+    return <MemoryGame onBack={handleBack} />;
+  }
+
+  if (currentGame === 'sudoku') {
+    if (!user) { setShowLogin(true); return null; }
+    return <SudokuGame onBack={handleBack} />;
+  }
+
+  if (currentGame === 'minesweeper') {
+    if (!user) { setShowLogin(true); return null; }
+    return <MinesweeperGame onBack={handleBack} />;
+  }
+
   if (currentGame === 'chess') {
     if (!user) { setShowLogin(true); return null; }
     return <ChessGame onBack={handleBack} />;
@@ -93,6 +118,7 @@ function AppInner() {
       onLogout={user ? handleLogout : null}
       onShowProgress={handleShowProgress}
       onLogin={() => setShowLogin(true)}
+      onShowLeaderboard={() => setShowLeaderboard(true)}
       isLoggedIn={!!user}
     />
   );

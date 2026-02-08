@@ -1,0 +1,128 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  max-width: 500px;
+  width: 100%;
+  animation: fadeIn 0.4s ease;
+}
+.topBar {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+.backBtn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+}
+.stat {
+  font-size: 18px;
+  font-weight: bold;
+  background: white;
+  padding: 6px 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.title { font-size: 28px; margin: 0; }
+.subtitle { font-size: 18px; color: #666; margin: 0; }
+.diffGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+.diffBtn {
+  padding: 16px;
+  font-size: 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.diffBtn:hover { transform: scale(1.05); }
+.flagToggle {
+  padding: 10px 24px;
+  font-size: 18px;
+  border-radius: 12px;
+  background: white;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  font-weight: bold;
+}
+.flagActive {
+  background: #fff3e0;
+  border-color: #ff9800;
+}
+.board {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  max-width: 400px;
+}
+.cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 4vw, 22px);
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.cell:active { transform: scale(0.9); }
+.hidden {
+  background: linear-gradient(135deg, #90caf9, #64b5f6);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.revealed {
+  background: #e8eaf6;
+}
+.restartBtn {
+  padding: 10px 24px;
+  font-size: 18px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: none;
+  cursor: pointer;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  gap: 12px;
+  color: white;
+  font-size: 20px;
+}
+.modal h2 { font-size: 36px; }
+.modalBtns { display: flex; gap: 12px; }
+.modalBtns button {
+  padding: 12px 24px;
+  font-size: 18px;
+  border-radius: 12px;
+  background: white;
+  color: #333;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
