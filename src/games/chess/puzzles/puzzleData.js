@@ -19,11 +19,11 @@ export const puzzles = [
   },
   {
     id: 3,
-    title: '비숍의 대각선 공격!',
-    description: '비숍으로 체크메이트를 만들어봐! ⛪',
-    fen: 'r1bk3r/pppp1Bpp/2n2q2/4p3/2B1P3/8/PPPP1PPP/RN1QK1NR w KQ - 0 1',
-    solution: { from: 'c4', to: 'f7' },
-    hint: '비숍을 대각선으로 옮겨봐! f7을 노려봐!',
+    title: '비숍과 퀸의 협동!',
+    description: '퀸으로 체크메이트를 만들어봐! 비숍이 도와줄 거야! ⛪',
+    fen: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1',
+    solution: { from: 'f3', to: 'f7' },
+    hint: '퀸을 f7로 보내봐! 비숍이 지켜주고 있어!',
   },
   {
     id: 4,
