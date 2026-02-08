@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
 import styles from './GomokuGame.module.css';
 
@@ -150,6 +151,7 @@ export default function GomokuGame({ onBack }) {
   const [winLine, setWinLine] = useState(null);
 
   const isGameOver = !!winner;
+  const { startTracking, endTracking } = usePlayTracking('gomoku');
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('gomoku', {
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer, boardSize, difficulty, moveHistory: history }),
@@ -161,6 +163,7 @@ export default function GomokuGame({ onBack }) {
       setHistory(state.moveHistory || []);
       setGameStarted(true);
       setWinner(null); setLastMove(null); setWinLine(null);
+      startTracking();
     },
     gameStarted,
     gameOver: isGameOver,
@@ -171,6 +174,10 @@ export default function GomokuGame({ onBack }) {
   }, [board]);
 
   const isDraw = !winner && isBoardFull;
+
+  useEffect(() => {
+    if (isDraw) endTracking('draw');
+  }, [isDraw, endTracking]);
 
   // Celebrate on win
   useEffect(() => {
@@ -196,7 +203,9 @@ export default function GomokuGame({ onBack }) {
       };
       frame();
     }
-  }, [winner]);
+    if (winner === BLACK) endTracking('win');
+    else if (winner === WHITE) endTracking('lose');
+  }, [winner, endTracking]);
 
   const handleCellClick = useCallback((row, col) => {
     if (board[row][col] !== EMPTY || winner || isAiThinking || currentPlayer !== BLACK) return;
@@ -257,7 +266,8 @@ export default function GomokuGame({ onBack }) {
     setHistory([]);
     setDifficulty(diff || difficulty);
     setGameStarted(true);
-  }, [boardSize, difficulty]);
+    startTracking();
+  }, [boardSize, difficulty, startTracking]);
 
   if (!gameStarted) {
     return (

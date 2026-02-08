@@ -38,6 +38,14 @@ async function initDB() {
       metric_type TEXT NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS game_plays (
+      id SERIAL PRIMARY KEY,
+      user_id INT REFERENCES users(id) ON DELETE CASCADE,
+      game_type TEXT NOT NULL,
+      result TEXT,
+      duration_seconds INT,
+      played_at TIMESTAMPTZ DEFAULT NOW()
+    );
     CREATE TABLE IF NOT EXISTS progress (
       id SERIAL PRIMARY KEY,
       user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -71,6 +79,16 @@ app.post('/api/users', async (req, res) => {
       [name.trim(), pin]
     );
     res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Check if name exists
+app.get('/api/users/check/:name', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT id FROM users WHERE LOWER(name)=LOWER($1)', [req.params.name.trim()]);
+    res.json({ exists: rows.length > 0 });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -168,6 +186,70 @@ app.delete('/api/game-save/:userId/:gameType', async (req, res) => {
       [req.params.userId, req.params.gameType]
     );
     res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// --- Game Plays (Statistics) ---
+app.post('/api/plays', async (req, res) => {
+  const { user_id, game_type, result, duration_seconds } = req.body;
+  if (!game_type) return res.status(400).json({ error: 'game_type required' });
+  try {
+    const { rows } = await pool.query(
+      'INSERT INTO game_plays (user_id, game_type, result, duration_seconds) VALUES ($1,$2,$3,$4) RETURNING *',
+      [user_id || null, game_type, result || null, duration_seconds || null]
+    );
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/stats', async (req, res) => {
+  try {
+    const total = await pool.query('SELECT COUNT(*)::int as total FROM game_plays');
+    const perGame = await pool.query('SELECT game_type, COUNT(*)::int as count FROM game_plays GROUP BY game_type ORDER BY count DESC');
+    const users = await pool.query('SELECT COUNT(DISTINCT user_id)::int as total FROM game_plays WHERE user_id IS NOT NULL');
+    const popular = perGame.rows[0] || null;
+    res.json({
+      totalPlays: total.rows[0].total,
+      totalUsers: users.rows[0].total,
+      mostPopular: popular?.game_type || null,
+      perGame: perGame.rows,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/stats/games', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT game_type,
+        COUNT(*)::int as play_count,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE result='win') / NULLIF(COUNT(*),0), 1) as win_rate,
+        ROUND(AVG(duration_seconds)) as avg_duration
+      FROM game_plays GROUP BY game_type ORDER BY play_count DESC
+    `);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/stats/user/:userId', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT game_type,
+        COUNT(*)::int as play_count,
+        COUNT(*) FILTER (WHERE result='win')::int as wins,
+        COUNT(*) FILTER (WHERE result='lose')::int as losses,
+        COUNT(*) FILTER (WHERE result='draw')::int as draws,
+        ROUND(AVG(duration_seconds)) as avg_duration
+      FROM game_plays WHERE user_id=$1 GROUP BY game_type ORDER BY play_count DESC
+    `, [req.params.userId]);
+    res.json(rows);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

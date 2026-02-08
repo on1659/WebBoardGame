@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
-import { createUser, loginUserByName } from './api';
+import { createUser, loginUserByName, checkNameExists } from './api';
 import styles from './ProfileScreen.module.css';
 
 const RECENT_NAMES_KEY = 'webboardgame_recent_names';
@@ -182,7 +182,19 @@ export default function ProfileScreen({ onBack }) {
         <button
           className={styles.nextBtn}
           disabled={!name.trim()}
-          onClick={() => { if (name.trim()) { setStep('signup-pin'); setPin(''); setError(''); } }}
+          onClick={async () => {
+            if (!name.trim()) return;
+            try {
+              const exists = await checkNameExists(name.trim());
+              if (exists) {
+                setError('이미 있는 이름이야! 다른 이름을 써줘 😊');
+              } else {
+                setStep('signup-pin'); setPin(''); setError('');
+              }
+            } catch {
+              setStep('signup-pin'); setPin(''); setError('');
+            }
+          }}
         >
           다음 ➡️
         </button>

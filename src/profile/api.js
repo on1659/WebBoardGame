@@ -1,5 +1,11 @@
 const API = '/api';
 
+export async function checkNameExists(name) {
+  const res = await fetch(`${API}/users/check/${encodeURIComponent(name)}`);
+  const data = await res.json();
+  return data.exists;
+}
+
 export async function createUser(name, pin) {
   const res = await fetch(`${API}/users`, {
     method: 'POST',
@@ -68,5 +74,29 @@ export async function fetchLeaderboard(gameType) {
 
 export async function fetchUserScores(userId) {
   const res = await fetch(`${API}/leaderboard/user/${userId}`);
+  return res.json();
+}
+
+export async function recordPlay(userId, gameType, result, durationSeconds) {
+  const res = await fetch(`${API}/plays`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: userId, game_type: gameType, result, duration_seconds: durationSeconds }),
+  });
+  return res.json();
+}
+
+export async function fetchStats() {
+  const res = await fetch(`${API}/stats`);
+  return res.json();
+}
+
+export async function fetchGameStats() {
+  const res = await fetch(`${API}/stats/games`);
+  return res.json();
+}
+
+export async function fetchUserStats(userId) {
+  const res = await fetch(`${API}/stats/user/${userId}`);
   return res.json();
 }

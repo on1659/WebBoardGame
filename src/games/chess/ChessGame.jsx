@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useChessGame } from './hooks/useChessGame';
 import { useGameSave } from '../../hooks/useGameSave';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
 import DifficultySelect from './components/DifficultySelect';
 import Board from './components/Board';
@@ -21,6 +22,7 @@ export default function ChessGame({ onBack }) {
   const [showGameOverModal, setShowGameOverModal] = useState(true);
 
   const game = useChessGame('easy');
+  const { startTracking, endTracking } = usePlayTracking('chess');
 
   const isGameOver = game.gameStatus !== 'playing';
   const isGameActive = mode === 'game';
@@ -36,6 +38,7 @@ export default function ChessGame({ onBack }) {
       game.restoreGame(state);
       setMode('game');
       setShowGameOverModal(true);
+      startTracking();
     },
     gameStarted: isGameActive,
     gameOver: isGameOver && isGameActive,
@@ -45,12 +48,22 @@ export default function ChessGame({ onBack }) {
     game.newGame(difficulty);
     setMode('game');
     setShowGameOverModal(true);
-  }, [game]);
+    startTracking();
+  }, [game, startTracking]);
 
   const handleNewGame = useCallback(() => {
     setMode('menu');
     setShowGameOverModal(true);
   }, []);
+
+  useEffect(() => {
+    if (!isGameActive || !isGameOver) return;
+    if (game.gameStatus === 'checkmate') {
+      endTracking(game.winner === 'player' ? 'win' : 'lose');
+    } else {
+      endTracking('draw');
+    }
+  }, [isGameOver, isGameActive, game.gameStatus, game.winner, endTracking]);
 
   const handleNewGameFromModal = useCallback(() => {
     game.newGame();

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser } from '../../profile/UserContext';
 import { submitScore } from '../../profile/api';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import styles from './MinesweeperGame.module.css';
 
 const DIFFICULTIES = {
@@ -37,6 +38,7 @@ function createBoard(size, mines, safeIdx) {
 
 export default function MinesweeperGame({ onBack }) {
   const { user } = useUser();
+  const { startTracking, endTracking } = usePlayTracking('minesweeper');
   const [difficulty, setDifficulty] = useState(null);
   const [board, setBoard] = useState([]);
   const [revealed, setRevealed] = useState(new Set());
@@ -63,7 +65,8 @@ export default function MinesweeperGame({ onBack }) {
     setDifficulty(diff);
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => setTime(t => t + 1), 1000);
-  }, []);
+    startTracking();
+  }, [startTracking]);
 
   useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
 
@@ -112,6 +115,7 @@ export default function MinesweeperGame({ onBack }) {
       clearInterval(timerRef.current);
       setRevealed(new Set(Array.from({length: size*size}, (_,i) => i)));
       setGameState('lost');
+      endTracking('lose');
       return;
     }
 
@@ -123,6 +127,7 @@ export default function MinesweeperGame({ onBack }) {
     if (newRev.size >= nonMines) {
       clearInterval(timerRef.current);
       setGameState('won');
+      endTracking('win');
       if (user) submitScore(user.id, 'minesweeper', time, 'time').catch(() => {});
     }
   }, [gameState, flagMode, flagged, revealed, board, firstClick, revealCell, time, user]);

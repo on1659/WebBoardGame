@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
 import styles from './OthelloGame.module.css';
 
@@ -80,6 +81,7 @@ export default function OthelloGame({ onBack }) {
   const [lastMove, setLastMove] = useState(null);
 
   const isGameOver = !!winner;
+  const { startTracking, endTracking } = usePlayTracking('othello');
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('othello', {
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer, difficulty }),
@@ -89,6 +91,7 @@ export default function OthelloGame({ onBack }) {
       setDifficulty(state.difficulty);
       setGameStarted(true);
       setWinner(null); setLastMove(null); setFlipping(new Set());
+      startTracking();
     },
     gameStarted,
     gameOver: isGameOver,
@@ -110,10 +113,16 @@ export default function OthelloGame({ onBack }) {
   }, []);
 
   useEffect(() => {
-    if (winner === BLACK)
+    if (winner === BLACK) {
       confetti({ particleCount:100, spread:70, origin:{y:0.6},
         colors:['#a8d5ba','#f8bbd9','#fff59d','#d1c4e9','#ffccbc'] });
-  }, [winner]);
+      endTracking('win');
+    } else if (winner === WHITE) {
+      endTracking('lose');
+    } else if (winner === 'draw') {
+      endTracking('draw');
+    }
+  }, [winner, endTracking]);
 
   // Handle AI turn or pass
   useEffect(() => {
@@ -194,7 +203,7 @@ export default function OthelloGame({ onBack }) {
             <button className={`${styles.diffBtn} ${difficulty==='medium'?styles.active:''}`} onClick={()=>setDifficulty('medium')}>🐱 보통</button>
           </div>
         </div>
-        <button className={styles.startBtn} onClick={()=>setGameStarted(true)}>🎮 게임 시작!</button>
+        <button className={styles.startBtn} onClick={()=>{setGameStarted(true);startTracking();}}>🎮 게임 시작!</button>
         <button className={styles.backBtn} onClick={onBack}>🏠 홈으로</button>
       </div>
     );

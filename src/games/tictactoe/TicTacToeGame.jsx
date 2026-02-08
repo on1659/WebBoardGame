@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
 import styles from './TicTacToeGame.module.css';
 
@@ -58,6 +59,7 @@ export default function TicTacToeGame({ onBack }) {
   const [scores, setScores] = useState({ player: 0, ai: 0, draw: 0 });
 
   const isGameOver = !!result;
+  const { startTracking, endTracking } = usePlayTracking('tictactoe');
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('tictactoe', {
     getState: () => ({ board, currentPlayer: isPlayerTurn ? 'X' : 'O', difficulty, scores }),
@@ -68,6 +70,7 @@ export default function TicTacToeGame({ onBack }) {
       setScores(state.scores || { player: 0, ai: 0, draw: 0 });
       setGameStarted(true);
       setResult(null);
+      startTracking();
     },
     gameStarted,
     gameOver: isGameOver,
@@ -77,8 +80,13 @@ export default function TicTacToeGame({ onBack }) {
     if (result?.winner === X) {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 },
         colors: ['#a8d5ba','#f8bbd9','#fff59d','#d1c4e9','#ffccbc'] });
+      endTracking('win');
+    } else if (result?.winner === O) {
+      endTracking('lose');
+    } else if (result === 'draw') {
+      endTracking('draw');
     }
-  }, [result]);
+  }, [result, endTracking]);
 
   const handleClick = useCallback((i) => {
     if (board[i] !== EMPTY || !isPlayerTurn || result || aiThinking) return;
@@ -125,7 +133,7 @@ export default function TicTacToeGame({ onBack }) {
             <button className={`${styles.diffBtn} ${difficulty==='medium'?styles.active:''}`} onClick={()=>setDifficulty('medium')}>🐱 보통</button>
           </div>
         </div>
-        <button className={styles.startBtn} onClick={()=>setGameStarted(true)}>🎮 게임 시작!</button>
+        <button className={styles.startBtn} onClick={()=>{setGameStarted(true);startTracking();}}>🎮 게임 시작!</button>
         <button className={styles.backBtn} onClick={onBack}>🏠 홈으로</button>
       </div>
     );

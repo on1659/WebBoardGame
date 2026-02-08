@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser } from '../../profile/UserContext';
 import { submitScore } from '../../profile/api';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import styles from './MemoryGame.module.css';
 
 const EMOJI_SETS = {
@@ -25,6 +26,7 @@ function shuffle(arr) {
 
 export default function MemoryGame({ onBack }) {
   const { user } = useUser();
+  const { startTracking, endTracking } = usePlayTracking('memory');
   const [difficulty, setDifficulty] = useState(null);
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
@@ -53,7 +55,8 @@ export default function MemoryGame({ onBack }) {
     lockRef.current = false;
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => setTime(t => t + 1), 1000);
-  }, []);
+    startTracking();
+  }, [startTracking]);
 
   useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
 
@@ -75,6 +78,7 @@ export default function MemoryGame({ onBack }) {
           clearInterval(timerRef.current);
           setGameOver(true);
           setShowConfetti(true);
+          endTracking('complete');
           if (user) {
             submitScore(user.id, 'memory', moves + 1, 'moves').catch(() => {});
             submitScore(user.id, 'memory_time', time, 'time').catch(() => {});

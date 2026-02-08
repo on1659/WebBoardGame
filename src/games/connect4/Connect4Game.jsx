@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
 import styles from './Connect4Game.module.css';
 
@@ -88,6 +89,7 @@ export default function Connect4Game({ onBack }) {
   const [hoverCol, setHoverCol] = useState(-1);
 
   const isGameOver = !!winner;
+  const { startTracking, endTracking } = usePlayTracking('connect4');
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('connect4', {
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer: isPlayerTurn ? PLAYER : AI, difficulty }),
@@ -97,6 +99,7 @@ export default function Connect4Game({ onBack }) {
       setDifficulty(state.difficulty);
       setGameStarted(true);
       setWinner(null); setWinCells([]); setLastDrop(null);
+      startTracking();
     },
     gameStarted,
     gameOver: isGameOver,
@@ -105,9 +108,15 @@ export default function Connect4Game({ onBack }) {
   const isFull = useMemo(() => board[0].every(c => c !== EMPTY), [board]);
 
   useEffect(() => {
-    if (winner === PLAYER)
+    if (winner === PLAYER) {
       confetti({ particleCount: 100, spread: 70, origin:{y:0.6}, colors:['#e91e63','#ff5722','#ffc107','#4caf50','#2196f3'] });
-  }, [winner]);
+      endTracking('win');
+    } else if (winner === AI) {
+      endTracking('lose');
+    } else if (winner === 'draw') {
+      endTracking('draw');
+    }
+  }, [winner, endTracking]);
 
   const handleDrop = useCallback((col) => {
     if (winner || aiThinking || !isPlayerTurn) return;
@@ -149,7 +158,7 @@ export default function Connect4Game({ onBack }) {
             <button className={`${styles.diffBtn} ${difficulty==='medium'?styles.active:''}`} onClick={()=>setDifficulty('medium')}>🐱 보통</button>
           </div>
         </div>
-        <button className={styles.startBtn} onClick={()=>setGameStarted(true)}>🎮 게임 시작!</button>
+        <button className={styles.startBtn} onClick={()=>{setGameStarted(true);startTracking();}}>🎮 게임 시작!</button>
         <button className={styles.backBtn} onClick={onBack}>🏠 홈으로</button>
       </div>
     );

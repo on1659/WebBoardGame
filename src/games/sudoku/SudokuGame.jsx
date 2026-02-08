@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser } from '../../profile/UserContext';
 import { submitScore } from '../../profile/api';
+import { usePlayTracking } from '../../hooks/usePlayTracking';
 import styles from './SudokuGame.module.css';
 
 // 4x4 sudoku puzzles: [solution, puzzle (0=empty)]
@@ -23,6 +24,7 @@ const PUZZLES = {
 
 export default function SudokuGame({ onBack }) {
   const { user } = useUser();
+  const { startTracking, endTracking } = usePlayTracking('sudoku');
   const [difficulty, setDifficulty] = useState(null);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const [grid, setGrid] = useState([]);
@@ -47,7 +49,8 @@ export default function SudokuGame({ onBack }) {
     setPuzzleIdx(idx);
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => setTime(t => t + 1), 1000);
-  }, []);
+    startTracking();
+  }, [startTracking]);
 
   useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
 
@@ -78,6 +81,7 @@ export default function SudokuGame({ onBack }) {
     if (newGrid.every((v, i) => v === solRef.current[i])) {
       clearInterval(timerRef.current);
       setGameOver(true);
+      endTracking('complete');
       if (user) submitScore(user.id, 'sudoku', time, 'time').catch(() => {});
     }
   }, [selected, fixed, grid, gameOver, findConflicts, time, user]);
