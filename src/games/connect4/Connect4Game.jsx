@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
+import { useGameSave } from '../../hooks/useGameSave';
+import ResumeModal from '../../components/ResumeModal';
 import styles from './Connect4Game.module.css';
 
 const ROWS = 6, COLS = 7;
@@ -85,6 +87,21 @@ export default function Connect4Game({ onBack }) {
   const [lastDrop, setLastDrop] = useState(null);
   const [hoverCol, setHoverCol] = useState(-1);
 
+  const isGameOver = !!winner;
+
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('connect4', {
+    getState: () => ({ board: board.map(r=>[...r]), currentPlayer: isPlayerTurn ? PLAYER : AI, difficulty }),
+    onResume: (state) => {
+      setBoard(state.board);
+      setIsPlayerTurn(state.currentPlayer === PLAYER);
+      setDifficulty(state.difficulty);
+      setGameStarted(true);
+      setWinner(null); setWinCells([]); setLastDrop(null);
+    },
+    gameStarted,
+    gameOver: isGameOver,
+  });
+
   const isFull = useMemo(() => board[0].every(c => c !== EMPTY), [board]);
 
   useEffect(() => {
@@ -139,6 +156,8 @@ export default function Connect4Game({ onBack }) {
   }
 
   return (
+    <>
+    <ResumeModal isOpen={showResumeModal} onResume={handleResume} onNewGame={handleNewFromModal} />
     <div className={styles.container}>
       <div className={styles.header}>
         <button className={styles.homeBtn} onClick={onBack}>🏠</button>
@@ -171,5 +190,6 @@ export default function Connect4Game({ onBack }) {
         <button className={styles.ctrlBtn} onClick={()=>setGameStarted(false)}>⚙️ 설정</button>
       </div>
     </div>
+    </>
   );
 }

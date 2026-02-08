@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { useGameSave } from '../../hooks/useGameSave';
+import ResumeModal from '../../components/ResumeModal';
 import styles from './GomokuGame.module.css';
 
 const EMPTY = 0;
@@ -146,6 +148,23 @@ export default function GomokuGame({ onBack }) {
   const [lastMove, setLastMove] = useState(null);
   const [history, setHistory] = useState([]);
   const [winLine, setWinLine] = useState(null);
+
+  const isGameOver = !!winner;
+
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('gomoku', {
+    getState: () => ({ board: board.map(r=>[...r]), currentPlayer, boardSize, difficulty, moveHistory: history }),
+    onResume: (state) => {
+      setBoardSize(state.boardSize);
+      setBoard(state.board);
+      setCurrentPlayer(state.currentPlayer);
+      setDifficulty(state.difficulty);
+      setHistory(state.moveHistory || []);
+      setGameStarted(true);
+      setWinner(null); setLastMove(null); setWinLine(null);
+    },
+    gameStarted,
+    gameOver: isGameOver,
+  });
 
   const isBoardFull = useMemo(() => {
     return board.every(row => row.every(cell => cell !== EMPTY));
@@ -294,6 +313,8 @@ export default function GomokuGame({ onBack }) {
   const cellSize = Math.min(Math.floor(560 / boardSize), 48);
 
   return (
+    <>
+    <ResumeModal isOpen={showResumeModal} onResume={handleResume} onNewGame={handleNewFromModal} />
     <div className={styles.container}>
       <div className={styles.header}>
         <button className={styles.headerBackBtn} onClick={onBack}>🏠</button>
@@ -372,6 +393,7 @@ export default function GomokuGame({ onBack }) {
         </button>
       </div>
     </div>
+    </>
   );
 }
 

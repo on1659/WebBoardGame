@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { fetchProgress } from './profile/api';
+import { fetchProgress, loadGame } from './profile/api';
 import styles from './HomeScreen.module.css';
 
 export default function HomeScreen({ profileName, userId, onSelectGame, onLogout, onShowProgress }) {
   const [chessDesc, setChessDesc] = useState('말을 움직여서 왕을 잡아요!');
+  const [savedGames, setSavedGames] = useState(new Set());
 
   useEffect(() => {
     fetchProgress(userId).then(rows => {
@@ -13,6 +14,14 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
         setChessDesc(`📚 ${tuts}/6 🧩 ${puzz}/10`);
       }
     }).catch(() => {});
+
+    // Check saved games
+    const gameTypes = ['chess', 'gomoku', 'othello', 'connect4', 'tictactoe'];
+    Promise.all(
+      gameTypes.map(gt => loadGame(userId, gt).then(d => d?.game_state ? gt : null).catch(() => null))
+    ).then(results => {
+      setSavedGames(new Set(results.filter(Boolean)));
+    });
   }, [userId]);
 
   const games = [
@@ -50,6 +59,7 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
             <span className={styles.gameEmoji}>{game.emoji}</span>
             <span className={styles.gameName}>{game.name}</span>
             <span className={styles.gameDesc}>{game.description}</span>
+            {game.available && savedGames.has(game.id) && <span className={styles.resumeBadge}>▶️ 이어하기</span>}
             {!game.available && <span className={styles.comingSoonBadge}>🔜 준비 중</span>}
           </button>
         ))}

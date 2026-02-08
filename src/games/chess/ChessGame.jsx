@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useChessGame } from './hooks/useChessGame';
+import { useGameSave } from '../../hooks/useGameSave';
+import ResumeModal from '../../components/ResumeModal';
 import DifficultySelect from './components/DifficultySelect';
 import Board from './components/Board';
 import GameInfo from './components/GameInfo';
@@ -19,6 +21,25 @@ export default function ChessGame({ onBack }) {
   const [showGameOverModal, setShowGameOverModal] = useState(true);
 
   const game = useChessGame('easy');
+
+  const isGameOver = game.gameStatus !== 'playing';
+  const isGameActive = mode === 'game';
+
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('chess', {
+    getState: () => ({
+      fen: game.position,
+      moveHistory: game.moveHistory,
+      difficulty: game.difficulty,
+      capturedPieces: game.capturedPieces,
+    }),
+    onResume: (state) => {
+      game.restoreGame(state);
+      setMode('game');
+      setShowGameOverModal(true);
+    },
+    gameStarted: isGameActive,
+    gameOver: isGameOver && isGameActive,
+  });
 
   const handleDifficultySelect = useCallback((difficulty) => {
     game.newGame(difficulty);
@@ -63,9 +84,9 @@ export default function ChessGame({ onBack }) {
     );
   }
 
-  const isGameOver = game.gameStatus !== 'playing';
-
   return (
+    <>
+    <ResumeModal isOpen={showResumeModal} onResume={handleResume} onNewGame={handleNewFromModal} />
     <div className={styles.container}>
       <div className={styles.header}>
         <button className={styles.backButtonSmall} onClick={onBack}>🏠</button>
@@ -146,5 +167,6 @@ export default function ChessGame({ onBack }) {
         onUndo={game.cancelBlunder}
       />
     </div>
+    </>
   );
 }

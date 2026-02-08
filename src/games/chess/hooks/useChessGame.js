@@ -251,6 +251,27 @@ export function useChessGame(initialDifficulty = 'easy') {
     setHintInfo(null);
   }, []);
 
+  const restoreGame = useCallback((savedState) => {
+    const chess = chessRef.current;
+    chess.load(savedState.fen);
+    setPosition(savedState.fen);
+    setMoveHistory(savedState.moveHistory || []);
+    setDifficulty(savedState.difficulty || difficulty);
+    setSelectedSquare(null);
+    setIsAiThinking(false);
+    setGameStatus('playing');
+    setWinner(null);
+    setLastMove(null);
+    setHintMove(null);
+    setHintInfo(null);
+    setBlunderWarning(null);
+    pendingMoveRef.current = null;
+    // If it's AI's turn after restore, trigger AI move
+    if (chess.turn() === 'b') {
+      triggerAiMove();
+    }
+  }, [difficulty, triggerAiMove]);
+
   const newGame = useCallback((newDifficulty) => {
     chessRef.current.reset();
     setPosition(INITIAL_FEN);
@@ -305,5 +326,6 @@ export function useChessGame(initialDifficulty = 'easy') {
     dismissHint,
     confirmBlunder,
     cancelBlunder,
+    restoreGame,
   };
 }

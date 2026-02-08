@@ -106,6 +106,16 @@
   text-align: center;
 }
 
+.resumeBadge {
+  font-size: var(--font-size-xs);
+  background: linear-gradient(135deg, #a8d5ba, #81c784);
+  color: white;
+  padding: 3px 10px;
+  border-radius: var(--border-radius-sm);
+  font-weight: bold;
+  animation: pulse 2s ease infinite;
+}
+
 .comingSoonBadge {
   font-size: var(--font-size-xs);
   background: var(--color-accent-peach);

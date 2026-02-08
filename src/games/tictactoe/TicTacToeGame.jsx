@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { useGameSave } from '../../hooks/useGameSave';
+import ResumeModal from '../../components/ResumeModal';
 import styles from './TicTacToeGame.module.css';
 
 const EMPTY = null;
@@ -54,6 +56,22 @@ export default function TicTacToeGame({ onBack }) {
   const [gameStarted, setGameStarted] = useState(false);
   const [aiThinking, setAiThinking] = useState(false);
   const [scores, setScores] = useState({ player: 0, ai: 0, draw: 0 });
+
+  const isGameOver = !!result;
+
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('tictactoe', {
+    getState: () => ({ board, currentPlayer: isPlayerTurn ? 'X' : 'O', difficulty, scores }),
+    onResume: (state) => {
+      setBoard(state.board);
+      setIsPlayerTurn(state.currentPlayer === 'X');
+      setDifficulty(state.difficulty);
+      setScores(state.scores || { player: 0, ai: 0, draw: 0 });
+      setGameStarted(true);
+      setResult(null);
+    },
+    gameStarted,
+    gameOver: isGameOver,
+  });
 
   useEffect(() => {
     if (result?.winner === X) {
@@ -116,6 +134,8 @@ export default function TicTacToeGame({ onBack }) {
   const winLine = result?.line || [];
 
   return (
+    <>
+    <ResumeModal isOpen={showResumeModal} onResume={handleResume} onNewGame={handleNewFromModal} />
     <div className={styles.container}>
       <div className={styles.header}>
         <button className={styles.homeBtn} onClick={onBack}>🏠</button>
@@ -154,5 +174,6 @@ export default function TicTacToeGame({ onBack }) {
         <button className={styles.ctrlBtn} onClick={()=>setGameStarted(false)}>⚙️ 설정</button>
       </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
+import { useGameSave } from '../../hooks/useGameSave';
+import ResumeModal from '../../components/ResumeModal';
 import styles from './OthelloGame.module.css';
 
 const SIZE = 8;
@@ -76,6 +78,21 @@ export default function OthelloGame({ onBack }) {
   const [aiThinking, setAiThinking] = useState(false);
   const [flipping, setFlipping] = useState(new Set());
   const [lastMove, setLastMove] = useState(null);
+
+  const isGameOver = !!winner;
+
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('othello', {
+    getState: () => ({ board: board.map(r=>[...r]), currentPlayer, difficulty }),
+    onResume: (state) => {
+      setBoard(state.board);
+      setCurrentPlayer(state.currentPlayer);
+      setDifficulty(state.difficulty);
+      setGameStarted(true);
+      setWinner(null); setLastMove(null); setFlipping(new Set());
+    },
+    gameStarted,
+    gameOver: isGameOver,
+  });
 
   const validMoves = useMemo(() => getValidMoves(board, currentPlayer), [board, currentPlayer]);
   const validSet = useMemo(() => new Set(validMoves.map(([r,c])=>`${r}-${c}`)), [validMoves]);
@@ -184,6 +201,8 @@ export default function OthelloGame({ onBack }) {
   }
 
   return (
+    <>
+    <ResumeModal isOpen={showResumeModal} onResume={handleResume} onNewGame={handleNewFromModal} />
     <div className={styles.container}>
       <div className={styles.header}>
         <button className={styles.homeBtn} onClick={onBack}>🏠</button>
@@ -225,5 +244,6 @@ export default function OthelloGame({ onBack }) {
         <button className={styles.ctrlBtn} onClick={()=>{setGameStarted(false);reset();}}>⚙️ 설정</button>
       </div>
     </div>
+    </>
   );
 }
