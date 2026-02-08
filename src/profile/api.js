@@ -33,3 +33,21 @@ export async function saveProgress(userId, stageType, stageId, stars = 1) {
   });
   return res.json();
 }
+
+export async function saveGame(userId, gameType, gameState) {
+  const res = await fetch(`${API}/game-save`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: userId, game_type: gameType, game_state: gameState }),
+  });
+  return res.json();
+}
+
+export async function loadGame(userId, gameType) {
+  const res = await fetch(`${API}/game-save/${userId}/${gameType}`);
+  return res.json();
+}
+
+export async function deleteGame(userId, gameType) {
+  await fetch(`${API}/game-save/${userId}/${gameType}`, { method: 'DELETE' });
+}

@@ -22,6 +22,14 @@ async function initDB() {
       pin_code TEXT NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS game_saves (
+      id SERIAL PRIMARY KEY,
+      user_id INT REFERENCES users(id) ON DELETE CASCADE,
+      game_type TEXT NOT NULL,
+      game_state JSONB NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(user_id, game_type)
+    );
     CREATE TABLE IF NOT EXISTS progress (
       id SERIAL PRIMARY KEY,
       user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -104,6 +112,54 @@ app.post('/api/progress', async (req, res) => {
       [user_id, stage_type, stage_id, stars]
     );
     res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Save game state
+app.post('/api/game-save', async (req, res) => {
+  const { user_id, game_type, game_state } = req.body;
+  if (!user_id || !game_type || !game_state) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO game_saves (user_id, game_type, game_state)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, game_type)
+       DO UPDATE SET game_state = $3, updated_at = NOW()
+       RETURNING *`,
+      [user_id, game_type, JSON.stringify(game_state)]
+    );
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Load game state
+app.get('/api/game-save/:userId/:gameType', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT game_state, updated_at FROM game_saves WHERE user_id=$1 AND game_type=$2',
+      [req.params.userId, req.params.gameType]
+    );
+    if (rows.length === 0) return res.json(null);
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Delete game save (when game completes)
+app.delete('/api/game-save/:userId/:gameType', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM game_saves WHERE user_id=$1 AND game_type=$2',
+      [req.params.userId, req.params.gameType]
+    );
+    res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
