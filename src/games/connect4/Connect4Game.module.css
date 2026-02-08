@@ -47,16 +47,18 @@
 }
 
 .boardFrame {
-  background: #1565c0; border-radius: 16px; padding: 12px;
+  background: #1565c0; border-radius: 16px; padding: clamp(6px, 2vw, 12px);
   box-shadow: var(--shadow-medium);
+  width: min(calc(100vw - 24px), 420px);
 }
 .board {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: clamp(3px, 1vw, 6px);
 }
 .cell {
-  width: 52px; height: 52px; background: #0d47a1; border-radius: 50%;
+  aspect-ratio: 1; background: #0d47a1; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; padding: 4px;
+  touch-action: manipulation;
 }
 .cell:not(:disabled):hover { background: #1976d2; }
 .cell:disabled { cursor: default; }
@@ -85,6 +87,10 @@
 }
 .ctrlBtn:hover { transform: scale(1.05); }
 
+@media (max-width: 480px) {
+  .setup, .container { gap: var(--spacing-md); }
+  .diffBtns { flex-wrap: wrap; justify-content: center; }
+}
 @keyframes fadeIn { from{opacity:0}to{opacity:1} }
 @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
 @keyframes pulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.05)} }

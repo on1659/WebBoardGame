@@ -55,18 +55,20 @@
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
   background: var(--color-text-primary); padding: 8px; border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-medium);
+  width: min(calc(100vw - 32px), 300px);
 }
 .cell {
-  width: 90px; height: 90px; background: white; border-radius: var(--border-radius-md);
+  aspect-ratio: 1; background: white; border-radius: var(--border-radius-md);
   display: flex; align-items: center; justify-content: center;
-  font-size: 48px; cursor: pointer; transition: all var(--transition-fast);
+  font-size: clamp(36px, 10vw, 48px); cursor: pointer; transition: all var(--transition-fast);
+  touch-action: manipulation;
 }
 .cell:not(:disabled):hover { background: #f0f0f0; transform: scale(1.05); }
 .cell:disabled { cursor: default; }
 .filled { animation: pop 0.3s ease-out; }
 .winCell { background: #fff59d !important; animation: winPulse 0.6s ease infinite; }
-.x { color: #e91e63; font-weight: bold; font-size: 56px; }
-.o { color: #2196f3; font-weight: bold; font-size: 64px; }
+.x { color: #e91e63; font-weight: bold; font-size: clamp(40px, 12vw, 56px); }
+.o { color: #2196f3; font-weight: bold; font-size: clamp(44px, 13vw, 64px); }
 
 .controls { display: flex; gap: var(--spacing-md); }
 .ctrlBtn {

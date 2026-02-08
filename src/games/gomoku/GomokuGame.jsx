@@ -310,7 +310,8 @@ export default function GomokuGame({ onBack }) {
     );
   }
 
-  const cellSize = Math.min(Math.floor(560 / boardSize), 48);
+  const maxBoardPx = Math.min(window.innerWidth - 32, 560);
+  const cellSize = Math.min(Math.floor(maxBoardPx / boardSize), 48);
 
   return (
     <>

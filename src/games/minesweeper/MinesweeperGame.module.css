@@ -60,6 +60,8 @@
   border: 2px solid #ccc;
   cursor: pointer;
   font-weight: bold;
+  min-height: 48px;
+  touch-action: manipulation;
 }
 .flagActive {
   background: #fff3e0;
@@ -68,8 +70,7 @@
 .board {
   display: grid;
   gap: 2px;
-  width: 100%;
-  max-width: 400px;
+  width: min(calc(100vw - 24px), 400px);
 }
 .cell {
   aspect-ratio: 1;
@@ -82,6 +83,7 @@
   border-radius: 4px;
   cursor: pointer;
   transition: transform 0.1s;
+  touch-action: manipulation;
 }
 .cell:active { transform: scale(0.9); }
 .hidden {
@@ -124,5 +126,10 @@
   border: none;
   cursor: pointer;
   font-weight: bold;
+}
+@media (max-width: 480px) {
+  .container { padding: 8px; gap: 10px; }
+  .modal h2 { font-size: 28px; }
+  .backBtn, .restartBtn { min-height: 44px; }
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

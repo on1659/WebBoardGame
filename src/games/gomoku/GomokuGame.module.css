@@ -63,8 +63,10 @@
 .boardWrapper {
   background: #dcb35c;
   border-radius: var(--border-radius-md);
-  padding: 12px;
+  padding: clamp(6px, 2vw, 12px);
   box-shadow: var(--shadow-medium);
+  max-width: calc(100vw - 16px);
+  overflow: hidden;
 }
 
 .board {
@@ -80,6 +82,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation;
 }
 
 .cell:disabled {
@@ -324,4 +327,10 @@
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
+}
+
+@media (max-width: 480px) {
+  .sizeButtons, .diffButtons { flex-wrap: wrap; justify-content: center; }
+  .container { gap: var(--spacing-sm); }
+  .setupScreen { gap: var(--spacing-md); }
 }
