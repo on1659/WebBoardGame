@@ -75,7 +75,7 @@
 
 @media (max-width: 480px) {
   :root {
-    --board-size: 95vw;
+    --board-size: min(calc(100vw - 40px), 85vh);
     --font-size-piece: clamp(20px, 8vw, 36px);
   }
 }

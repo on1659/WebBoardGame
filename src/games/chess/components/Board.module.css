@@ -24,7 +24,7 @@
 }
 
 .label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: var(--color-accent-primary, #8b6914);
   width: var(--square-size);
@@ -34,6 +34,16 @@
 
 .fileLabels .label {
   line-height: 1;
+}
+
+.rankLabels .label {
+  width: 16px;
+  line-height: var(--square-size);
+}
+
+@media (max-width: 480px) {
+  .label { font-size: 0.55rem; }
+  .rankLabels .label { width: 12px; }
 }
 
 .board {
