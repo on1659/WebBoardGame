@@ -3,6 +3,8 @@ import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
 import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
+import BadukTutorial from './tutorial/BadukTutorial';
+import BadukPuzzle from './tutorial/BadukPuzzle';
 import styles from './BadukGame.module.css';
 
 const EMPTY = 0;
@@ -256,6 +258,7 @@ function isStarPoint(r, c, size) {
 }
 
 export default function BadukGame({ onBack }) {
+  const [mode, setMode] = useState(null); // null=setup, 'tutorial', 'puzzle'
   const [boardSize, setBoardSize] = useState(9);
   const [board, setBoard] = useState(() => createBoard(9));
   const [currentPlayer, setCurrentPlayer] = useState(BLACK);
@@ -467,6 +470,14 @@ export default function BadukGame({ onBack }) {
   // Current score estimate
   const currentScores = gameOver ? null : countScore(board);
 
+  if (mode === 'tutorial') {
+    return <BadukTutorial onBack={() => setMode(null)} />;
+  }
+
+  if (mode === 'puzzle') {
+    return <BadukPuzzle onBack={() => setMode(null)} />;
+  }
+
   if (!gameStarted) {
     return (
       <div className={styles.setupScreen}>
@@ -510,6 +521,15 @@ export default function BadukGame({ onBack }) {
         <button className={styles.startButton} onClick={() => handleNewGame()}>
           🎮 게임 시작!
         </button>
+
+        <div className={styles.learnButtons}>
+          <button className={styles.learnButton} onClick={() => setMode('tutorial')}>
+            📚 배우기
+          </button>
+          <button className={styles.learnButton} onClick={() => setMode('puzzle')}>
+            🧩 퍼즐
+          </button>
+        </div>
 
         <button className={styles.backButton} onClick={onBack}>
           🏠 홈으로
