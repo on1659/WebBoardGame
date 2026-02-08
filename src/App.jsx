@@ -11,7 +11,7 @@ import SudokuGame from './games/sudoku/SudokuGame';
 import MinesweeperGame from './games/minesweeper/MinesweeperGame';
 import Leaderboard from './components/Leaderboard';
 import StatsPage from './components/StatsPage';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 function AppInner() {
   const { user, logout } = useUser();
@@ -21,6 +21,8 @@ function AppInner() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showStats, setShowStats] = useState(false);
 
+  const isHome = !currentGame && !showProgress && !showLogin && !showLeaderboard && !showStats;
+
   const handleBack = useCallback(() => {
     setCurrentGame(null);
     setShowProgress(false);
@@ -28,6 +30,22 @@ function AppInner() {
     setShowLeaderboard(false);
     setShowStats(false);
   }, []);
+
+  // 브라우저 뒤로가기 지원
+  useEffect(() => {
+    if (!isHome) {
+      window.history.pushState({ page: 'sub' }, '');
+    }
+
+    const onPopState = (e) => {
+      if (!isHome) {
+        handleBack();
+      }
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [isHome, handleBack]);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -37,7 +55,6 @@ function AppInner() {
 
   const handleSelectGame = useCallback((game) => {
     if (!user) {
-      // 로그인 안 했으면 로그인 먼저, 그 다음 게임으로
       setCurrentGame(game);
       setShowLogin(true);
     } else {
