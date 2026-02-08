@@ -24,6 +24,15 @@ const GAME_CATEGORIES = [
       { id: 'connect4_easy', label: '쉬움', metric: 'wins', unit: '승', lower: false },
       { id: 'connect4_medium', label: '보통', metric: 'wins', unit: '승', lower: false },
     ]},
+  { id: 'baduk', emoji: '⚪', name: '바둑', color: '#d1c4e9',
+    difficulties: [
+      { id: 'baduk_9x9_easy', label: '9×9 쉬움', metric: 'wins', unit: '승', lower: false },
+      { id: 'baduk_9x9_medium', label: '9×9 보통', metric: 'wins', unit: '승', lower: false },
+      { id: 'baduk_13x13_easy', label: '13×13 쉬움', metric: 'wins', unit: '승', lower: false },
+      { id: 'baduk_13x13_medium', label: '13×13 보통', metric: 'wins', unit: '승', lower: false },
+      { id: 'baduk_19x19_easy', label: '19×19 쉬움', metric: 'wins', unit: '승', lower: false },
+      { id: 'baduk_19x19_medium', label: '19×19 보통', metric: 'wins', unit: '승', lower: false },
+    ]},
   { id: 'memory', emoji: '🃏', name: '카드짝맞추기', color: '#e1bee7',
     difficulties: [
       { id: 'memory_easy', label: '쉬움', metric: 'moves', unit: '번', lower: true },

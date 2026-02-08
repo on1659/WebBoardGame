@@ -9,6 +9,7 @@ import Connect4Game from './games/connect4/Connect4Game';
 import MemoryGame from './games/memory/MemoryGame';
 import SudokuGame from './games/sudoku/SudokuGame';
 import MinesweeperGame from './games/minesweeper/MinesweeperGame';
+import BadukGame from './games/baduk/BadukGame';
 import Leaderboard from './components/Leaderboard';
 import StatsPage from './components/StatsPage';
 import { useState, useCallback, useEffect } from 'react';
@@ -126,6 +127,11 @@ function AppInner() {
   if (currentGame === 'connect4') {
     if (!user) { setShowLogin(true); return null; }
     return <Connect4Game onBack={handleBack} />;
+  }
+
+  if (currentGame === 'baduk') {
+    if (!user) { setShowLogin(true); return null; }
+    return <BadukGame onBack={handleBack} />;
   }
 
   return (

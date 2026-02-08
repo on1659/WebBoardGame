@@ -17,7 +17,7 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
     }).catch(() => {});
 
     // Check saved games
-    const gameTypes = ['chess', 'gomoku', 'othello', 'connect4'];
+    const gameTypes = ['chess', 'gomoku', 'othello', 'connect4', 'baduk'];
     Promise.all(
       gameTypes.map(gt => loadGame(userId, gt).then(d => d?.game_state ? gt : null).catch(() => null))
     ).then(results => {
@@ -33,7 +33,7 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
     { id: 'memory', emoji: '🃏', name: '카드 짝맞추기', description: '같은 카드를 찾아 뒤집어요!', color: '#e1bee7', available: true },
     { id: 'sudoku', emoji: '🧩', name: '미니 스도쿠', description: '숫자 퍼즐! 1~4를 채워봐!', color: '#b2dfdb', available: true },
     { id: 'minesweeper', emoji: '💣', name: '미니 지뢰찾기', description: '지뢰를 피해서 칸을 열어봐!', color: '#ffcdd2', available: true },
-    { id: 'baduk', emoji: '⚪', name: '바둑', description: '곧 만나요!', color: '#d1c4e9', available: false },
+    { id: 'baduk', emoji: '⚪', name: '바둑', description: '돌로 땅을 많이 차지해요!', color: '#d1c4e9', available: true },
   ];
 
   return (
