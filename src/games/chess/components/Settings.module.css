@@ -1,0 +1,160 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  width: 90%;
+  max-width: 360px;
+  box-shadow: var(--shadow-lifted);
+  animation: slideUp 0.3s ease-out;
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.difficultyButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.difficultyButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.difficultyButton.active {
+  background: var(--color-accent-primary);
+  box-shadow: 0 0 0 2px var(--color-button-hover);
+}
+
+.styleButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.styleButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.styleButton:hover {
+  transform: translateY(-2px);
+}
+
+.styleButton.active {
+  background: var(--color-accent-primary);
+  box-shadow: 0 0 0 2px var(--color-button-hover);
+}
+
+.styleIcon {
+  font-size: 28px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggleSlider {
+  width: 48px;
+  height: 28px;
+  background: #ccc;
+  border-radius: 14px;
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-soft);
+}
+
+.toggle input:checked + .toggleSlider {
+  background: var(--color-accent-primary);
+}
+
+.toggle input:checked + .toggleSlider::after {
+  transform: translateX(20px);
+}
+
+.toggleLabel {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+}
+
+.closeButton {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-button-primary);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-lg);
+  margin-top: var(--spacing-md);
+}
+
+.closeButton:hover {
+  background: var(--color-button-hover);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
