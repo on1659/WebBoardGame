@@ -17,7 +17,7 @@ function saveRecentName(name) {
   localStorage.setItem(RECENT_NAMES_KEY, JSON.stringify(names.slice(0, 5)));
 }
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ onBack }) {
   const { login } = useUser();
   const [mode, setMode] = useState('login'); // login | create
   const [name, setName] = useState('');
@@ -138,6 +138,11 @@ export default function ProfileScreen() {
       <button className={styles.createBtn} onClick={() => { setMode('create'); setPin(''); setName(''); setError(''); }}>
         ✨ 처음이야? 새로 만들기!
       </button>
+      {onBack && (
+        <button className={styles.backBtn} onClick={onBack}>
+          ◀ 돌아가기
+        </button>
+      )}
     </div>
   );
 }

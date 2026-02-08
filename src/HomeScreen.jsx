@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { fetchProgress, loadGame } from './profile/api';
 import styles from './HomeScreen.module.css';
 
-export default function HomeScreen({ profileName, userId, onSelectGame, onLogout, onShowProgress }) {
+export default function HomeScreen({ profileName, userId, onSelectGame, onLogout, onShowProgress, onLogin, isLoggedIn }) {
   const [chessDesc, setChessDesc] = useState('말을 움직여서 왕을 잡아요!');
   const [savedGames, setSavedGames] = useState(new Set());
 
   useEffect(() => {
+    if (!userId) return;
     fetchProgress(userId).then(rows => {
       const tuts = rows.filter(r => r.stage_type === 'tutorial').length;
       const puzz = rows.filter(r => r.stage_type === 'puzzle').length;
@@ -36,16 +37,29 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
   return (
     <div className={styles.container}>
       <div className={styles.topBar}>
-        <button className={styles.progressButton} onClick={onShowProgress}>
-          📊 진행도
-        </button>
-        <button className={styles.logoutButton} onClick={onLogout}>
-          👋 다른 친구
-        </button>
+        {isLoggedIn ? (
+          <>
+            <button className={styles.progressButton} onClick={onShowProgress}>
+              📊 진행도
+            </button>
+            <button className={styles.logoutButton} onClick={onLogout}>
+              👋 다른 친구
+            </button>
+          </>
+        ) : (
+          <button className={styles.loginButton} onClick={onLogin}>
+            🔑 로그인
+          </button>
+        )}
       </div>
 
       <h1 className={styles.title}>🎲 보드게임 세상 🎲</h1>
-      <p className={styles.subtitle}>안녕, <strong>{profileName}</strong>! 어떤 게임을 할까요? 😊</p>
+      <p className={styles.subtitle}>
+        {isLoggedIn
+          ? <>안녕, <strong>{profileName}</strong>! 어떤 게임을 할까요? 😊</>
+          : <>어떤 게임을 할까요? 😊</>
+        }
+      </p>
 
       <div className={styles.gameGrid}>
         {games.map((game, index) => (
