@@ -38,16 +38,6 @@ async function initDB() {
 
 // --- API Routes ---
 
-// List profiles (names only)
-app.get('/api/users', async (req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT id, name, created_at FROM users ORDER BY created_at');
-    res.json(rows);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
 // Create profile
 app.post('/api/users', async (req, res) => {
   const { name, pin } = req.body;
@@ -55,6 +45,11 @@ app.post('/api/users', async (req, res) => {
     return res.status(400).json({ error: '이름과 4자리 숫자 암호가 필요해요' });
   }
   try {
+    // Check if name already exists
+    const existing = await pool.query('SELECT id FROM users WHERE LOWER(name)=LOWER($1)', [name.trim()]);
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ error: '이미 있는 이름이야! 다른 이름을 써줘 😊' });
+    }
     const { rows } = await pool.query(
       'INSERT INTO users (name, pin_code) VALUES ($1, $2) RETURNING id, name, created_at',
       [name.trim(), pin]
@@ -65,12 +60,18 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Login (verify pin)
+// Login by name + pin
 app.post('/api/users/login', async (req, res) => {
-  const { id, pin } = req.body;
+  const { name, pin } = req.body;
+  if (!name?.trim() || !pin) {
+    return res.status(400).json({ error: '이름과 암호를 입력해줘' });
+  }
   try {
-    const { rows } = await pool.query('SELECT id, name, created_at FROM users WHERE id=$1 AND pin_code=$2', [id, pin]);
-    if (rows.length === 0) return res.status(401).json({ error: '암호가 틀렸어요 😢' });
+    const { rows } = await pool.query(
+      'SELECT id, name, created_at FROM users WHERE LOWER(name)=LOWER($1) AND pin_code=$2',
+      [name.trim(), pin]
+    );
+    if (rows.length === 0) return res.status(401).json({ error: '이름이나 암호가 틀렸어요 😢' });
     res.json(rows[0]);
   } catch (e) {
     res.status(500).json({ error: e.message });

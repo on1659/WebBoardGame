@@ -1,41 +1,57 @@
 import { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
-import { fetchUsers, createUser, loginUser } from './api';
+import { createUser, loginUserByName } from './api';
 import styles from './ProfileScreen.module.css';
+
+const RECENT_NAMES_KEY = 'webboardgame_recent_names';
+
+function getRecentNames() {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_NAMES_KEY) || '[]');
+  } catch { return []; }
+}
+
+function saveRecentName(name) {
+  const names = getRecentNames().filter(n => n !== name);
+  names.unshift(name);
+  localStorage.setItem(RECENT_NAMES_KEY, JSON.stringify(names.slice(0, 5)));
+}
 
 export default function ProfileScreen() {
   const { login } = useUser();
-  const [users, setUsers] = useState([]);
-  const [mode, setMode] = useState('select'); // select | create | pin
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [mode, setMode] = useState('login'); // login | create
   const [name, setName] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [recentNames, setRecentNames] = useState([]);
+  const [showRecent, setShowRecent] = useState(false);
 
   useEffect(() => {
-    fetchUsers().then(u => { setUsers(u); setLoading(false); }).catch(() => setLoading(false));
+    setRecentNames(getRecentNames());
   }, []);
+
+  const handleLogin = async () => {
+    if (!name.trim()) { setError('이름을 써줘! 😊'); return; }
+    if (pin.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
+    try {
+      const user = await loginUserByName(name.trim(), pin);
+      saveRecentName(name.trim());
+      login(user);
+    } catch (e) {
+      setError('이름이나 암호가 틀렸어요 😢');
+      setPin('');
+    }
+  };
 
   const handleCreate = async () => {
     if (!name.trim()) { setError('이름을 써줘! 😊'); return; }
     if (pin.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
     try {
       const user = await createUser(name.trim(), pin);
+      saveRecentName(name.trim());
       login(user);
     } catch (e) {
       setError(e.message);
-    }
-  };
-
-  const handleLogin = async () => {
-    if (pin.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
-    try {
-      const user = await loginUser(selectedUser.id, pin);
-      login(user);
-    } catch (e) {
-      setError('암호가 틀렸어요 😢');
-      setPin('');
     }
   };
 
@@ -64,25 +80,6 @@ export default function ProfileScreen() {
     </div>
   );
 
-  if (loading) {
-    return <div className={styles.container}><p className={styles.loadingText}>로딩 중... ⏳</p></div>;
-  }
-
-  // PIN entry for existing user
-  if (mode === 'pin' && selectedUser) {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.title}>🔒 암호를 눌러줘!</h1>
-        <p className={styles.subtitle}>{selectedUser.name}의 비밀번호</p>
-        {numPad(handleLogin)}
-        <button className={styles.backBtn} onClick={() => { setMode('select'); setPin(''); setError(''); }}>
-          ◀ 뒤로
-        </button>
-      </div>
-    );
-  }
-
-  // Create new profile
   if (mode === 'create') {
     return (
       <div className={styles.container}>
@@ -100,39 +97,47 @@ export default function ProfileScreen() {
         </div>
         <label className={styles.label}>비밀 숫자 4개를 정해줘! 🤫</label>
         {numPad(handleCreate)}
-        <button className={styles.backBtn} onClick={() => { setMode('select'); setPin(''); setName(''); setError(''); }}>
+        <button className={styles.backBtn} onClick={() => { setMode('login'); setPin(''); setName(''); setError(''); }}>
           ◀ 뒤로
         </button>
       </div>
     );
   }
 
-  // Profile select
+  // Login mode
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>🎮 누가 놀러 왔나요?</h1>
-      <div className={styles.profileGrid}>
-        {users.map(u => (
-          <button key={u.id} className={styles.profileCard} onClick={() => {
-            setSelectedUser(u);
-            setMode('pin');
-            setPin('');
-            setError('');
-          }}>
-            <span className={styles.avatar}>😊</span>
-            <span className={styles.profileName}>{u.name}</span>
-          </button>
-        ))}
-        <button className={`${styles.profileCard} ${styles.newProfile}`} onClick={() => {
-          setMode('create');
-          setPin('');
-          setName('');
-          setError('');
-        }}>
-          <span className={styles.avatar}>➕</span>
-          <span className={styles.profileName}>새 친구!</span>
-        </button>
+      <h1 className={styles.title}>🎮 안녕! 이름이 뭐야?</h1>
+      <div className={styles.nameSection}>
+        <div className={styles.nameInputWrapper}>
+          <input
+            className={styles.nameInput}
+            value={name}
+            onChange={e => { setName(e.target.value); setShowRecent(false); setError(''); }}
+            onFocus={() => recentNames.length > 0 && setShowRecent(true)}
+            placeholder="이름을 써줘"
+            maxLength={10}
+            autoFocus
+          />
+          {showRecent && recentNames.length > 0 && (
+            <div className={styles.recentList}>
+              {recentNames.map(n => (
+                <button key={n} className={styles.recentItem} onClick={() => {
+                  setName(n);
+                  setShowRecent(false);
+                }}>
+                  😊 {n}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+      <label className={styles.label}>비밀 숫자를 눌러줘! 🔑</label>
+      {numPad(handleLogin)}
+      <button className={styles.createBtn} onClick={() => { setMode('create'); setPin(''); setName(''); setError(''); }}>
+        ✨ 처음이야? 새로 만들기!
+      </button>
     </div>
   );
 }

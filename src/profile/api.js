@@ -1,10 +1,5 @@
 const API = '/api';
 
-export async function fetchUsers() {
-  const res = await fetch(`${API}/users`);
-  return res.json();
-}
-
 export async function createUser(name, pin) {
   const res = await fetch(`${API}/users`, {
     method: 'POST',
@@ -15,11 +10,11 @@ export async function createUser(name, pin) {
   return res.json();
 }
 
-export async function loginUser(id, pin) {
+export async function loginUserByName(name, pin) {
   const res = await fetch(`${API}/users/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, pin }),
+    body: JSON.stringify({ name, pin }),
   });
   if (!res.ok) throw new Error((await res.json()).error);
   return res.json();

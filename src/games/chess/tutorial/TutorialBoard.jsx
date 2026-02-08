@@ -5,8 +5,30 @@ import Piece from '../components/Piece';
 
 export default function TutorialBoard({ fen, highlightSquares = [], onSquareClick, pieceStyle = '2d' }) {
   const boardState = useMemo(() => {
-    const chess = new Chess(fen);
-    return chess.board();
+    // Try chess.js first; fall back to manual FEN parse for display-only positions
+    try {
+      const chess = new Chess(fen);
+      return chess.board();
+    } catch {
+      // Manual FEN parse for positions missing kings (tutorial display only)
+      const rows = fen.split(' ')[0].split('/');
+      const board = [];
+      const pieceMap = { p:'p', r:'r', n:'n', b:'b', q:'q', k:'k' };
+      for (const row of rows) {
+        const boardRow = [];
+        for (const ch of row) {
+          if (ch >= '1' && ch <= '8') {
+            for (let i = 0; i < parseInt(ch); i++) boardRow.push(null);
+          } else {
+            const color = ch === ch.toUpperCase() ? 'w' : 'b';
+            const type = pieceMap[ch.toLowerCase()];
+            boardRow.push({ type, color, square: '' });
+          }
+        }
+        board.push(boardRow);
+      }
+      return board;
+    }
   }, [fen]);
 
   const highlightSet = useMemo(() => new Set(highlightSquares), [highlightSquares]);
