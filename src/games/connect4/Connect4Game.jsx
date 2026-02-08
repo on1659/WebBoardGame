@@ -89,7 +89,7 @@ export default function Connect4Game({ onBack }) {
   const [hoverCol, setHoverCol] = useState(-1);
 
   const isGameOver = !!winner;
-  const { startTracking, endTracking } = usePlayTracking('connect4');
+  const { startTracking, endTracking } = usePlayTracking(`connect4_${difficulty}`);
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('connect4', {
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer: isPlayerTurn ? PLAYER : AI, difficulty }),

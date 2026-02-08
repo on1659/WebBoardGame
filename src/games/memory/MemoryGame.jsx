@@ -26,8 +26,8 @@ function shuffle(arr) {
 
 export default function MemoryGame({ onBack }) {
   const { user } = useUser();
-  const { startTracking, endTracking } = usePlayTracking('memory');
   const [difficulty, setDifficulty] = useState(null);
+  const { startTracking, endTracking } = usePlayTracking(difficulty ? `memory_${difficulty}` : 'memory');
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState(new Set());
@@ -80,8 +80,8 @@ export default function MemoryGame({ onBack }) {
           setShowConfetti(true);
           endTracking('complete');
           if (user) {
-            submitScore(user.id, 'memory', moves + 1, 'moves').catch(() => {});
-            submitScore(user.id, 'memory_time', time, 'time').catch(() => {});
+            submitScore(user.id, `memory_${difficulty}`, moves + 1, 'moves').catch(() => {});
+            submitScore(user.id, `memory_${difficulty}_time`, time, 'time').catch(() => {});
           }
         }
       } else {

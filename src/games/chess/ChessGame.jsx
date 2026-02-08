@@ -22,7 +22,7 @@ export default function ChessGame({ onBack }) {
   const [showGameOverModal, setShowGameOverModal] = useState(true);
 
   const game = useChessGame('easy');
-  const { startTracking, endTracking } = usePlayTracking('chess');
+  const { startTracking, endTracking } = usePlayTracking(`chess_${game.difficulty || 'medium'}`);
 
   const isGameOver = game.gameStatus !== 'playing';
   const isGameActive = mode === 'game';

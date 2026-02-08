@@ -81,7 +81,7 @@ export default function OthelloGame({ onBack }) {
   const [lastMove, setLastMove] = useState(null);
 
   const isGameOver = !!winner;
-  const { startTracking, endTracking } = usePlayTracking('othello');
+  const { startTracking, endTracking } = usePlayTracking(`othello_${difficulty}`);
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('othello', {
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer, difficulty }),

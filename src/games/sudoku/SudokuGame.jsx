@@ -24,8 +24,8 @@ const PUZZLES = {
 
 export default function SudokuGame({ onBack }) {
   const { user } = useUser();
-  const { startTracking, endTracking } = usePlayTracking('sudoku');
   const [difficulty, setDifficulty] = useState(null);
+  const { startTracking, endTracking } = usePlayTracking(difficulty ? `sudoku_${difficulty}` : 'sudoku');
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const [grid, setGrid] = useState([]);
   const [fixed, setFixed] = useState([]);
@@ -82,7 +82,7 @@ export default function SudokuGame({ onBack }) {
       clearInterval(timerRef.current);
       setGameOver(true);
       endTracking('complete');
-      if (user) submitScore(user.id, 'sudoku', time, 'time').catch(() => {});
+      if (user) submitScore(user.id, `sudoku_${difficulty}`, time, 'time').catch(() => {});
     }
   }, [selected, fixed, grid, gameOver, findConflicts, time, user]);
 

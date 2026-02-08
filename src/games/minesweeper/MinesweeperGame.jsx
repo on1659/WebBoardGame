@@ -38,8 +38,8 @@ function createBoard(size, mines, safeIdx) {
 
 export default function MinesweeperGame({ onBack }) {
   const { user } = useUser();
-  const { startTracking, endTracking } = usePlayTracking('minesweeper');
   const [difficulty, setDifficulty] = useState(null);
+  const { startTracking, endTracking } = usePlayTracking(difficulty ? `minesweeper_${difficulty}` : 'minesweeper');
   const [board, setBoard] = useState([]);
   const [revealed, setRevealed] = useState(new Set());
   const [flagged, setFlagged] = useState(new Set());
@@ -128,7 +128,7 @@ export default function MinesweeperGame({ onBack }) {
       clearInterval(timerRef.current);
       setGameState('won');
       endTracking('win');
-      if (user) submitScore(user.id, 'minesweeper', time, 'time').catch(() => {});
+      if (user) submitScore(user.id, `minesweeper_${difficulty}`, time, 'time').catch(() => {});
     }
   }, [gameState, flagMode, flagged, revealed, board, firstClick, revealCell, time, user]);
 

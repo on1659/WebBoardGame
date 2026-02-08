@@ -59,7 +59,7 @@ export default function TicTacToeGame({ onBack }) {
   const [scores, setScores] = useState({ player: 0, ai: 0, draw: 0 });
 
   const isGameOver = !!result;
-  const { startTracking, endTracking } = usePlayTracking('tictactoe');
+  const { startTracking, endTracking } = usePlayTracking(`tictactoe_${difficulty}`);
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('tictactoe', {
     getState: () => ({ board, currentPlayer: isPlayerTurn ? 'X' : 'O', difficulty, scores }),

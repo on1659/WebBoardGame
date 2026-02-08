@@ -151,7 +151,7 @@ export default function GomokuGame({ onBack }) {
   const [winLine, setWinLine] = useState(null);
 
   const isGameOver = !!winner;
-  const { startTracking, endTracking } = usePlayTracking('gomoku');
+  const { startTracking, endTracking } = usePlayTracking(`gomoku_${difficulty}`);
 
   const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('gomoku', {
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer, boardSize, difficulty, moveHistory: history }),
