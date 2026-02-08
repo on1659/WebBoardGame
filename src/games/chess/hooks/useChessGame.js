@@ -1,6 +1,7 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Chess } from 'chess.js';
 import { calculateBestMove } from '../engine/ai';
+import { getHint, checkBlunder } from '../hints/hintEngine';
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -17,6 +18,10 @@ export function useChessGame(initialDifficulty = 'easy') {
   const [showHighlights, setShowHighlights] = useState(true);
   const [lastMove, setLastMove] = useState(null);
   const [pieceStyle, setPieceStyle] = useState('2d'); // '2d' | '3d'
+  const [hintMove, setHintMove] = useState(null);
+  const [hintInfo, setHintInfo] = useState(null);
+  const [blunderWarning, setBlunderWarning] = useState(null);
+  const pendingMoveRef = useRef(null);
 
   const currentTurn = useMemo(() =>
     chessRef.current.turn() === 'w' ? 'player' : 'ai',
@@ -125,15 +130,11 @@ export function useChessGame(initialDifficulty = 'easy') {
     setIsAiThinking(false);
   }, [difficulty, checkGameEnd]);
 
-  const makeMove = useCallback((from, to) => {
+  const executeMove = useCallback((from, to) => {
+    const moveOptions = { from, to };
     const moves = chessRef.current.moves({ square: from, verbose: true });
     const move = moves.find(m => m.to === to);
-
-    if (!move) return false;
-
-    // Handle promotion - auto queen for 7-year-old
-    const moveOptions = { from, to };
-    if (move.flags.includes('p')) {
+    if (move && move.flags.includes('p')) {
       moveOptions.promotion = 'q';
     }
 
@@ -143,6 +144,8 @@ export function useChessGame(initialDifficulty = 'easy') {
       setMoveHistory(prev => [...prev, result.san]);
       setLastMove({ from, to });
       setSelectedSquare(null);
+      setHintMove(null);
+      setHintInfo(null);
 
       if (!checkGameEnd() && chessRef.current.turn() === 'b') {
         triggerAiMove();
@@ -152,6 +155,38 @@ export function useChessGame(initialDifficulty = 'easy') {
       return false;
     }
   }, [checkGameEnd, triggerAiMove]);
+
+  const makeMove = useCallback((from, to) => {
+    const moves = chessRef.current.moves({ square: from, verbose: true });
+    const move = moves.find(m => m.to === to);
+
+    if (!move) return false;
+
+    // Check for blunder
+    const blunder = checkBlunder(chessRef.current, from, to);
+    if (blunder) {
+      pendingMoveRef.current = { from, to };
+      setBlunderWarning(blunder);
+      setSelectedSquare(null);
+      return true; // handled, waiting for confirmation
+    }
+
+    return executeMove(from, to);
+  }, [executeMove]);
+
+  const confirmBlunder = useCallback(() => {
+    const pending = pendingMoveRef.current;
+    if (pending) {
+      executeMove(pending.from, pending.to);
+      pendingMoveRef.current = null;
+      setBlunderWarning(null);
+    }
+  }, [executeMove]);
+
+  const cancelBlunder = useCallback(() => {
+    pendingMoveRef.current = null;
+    setBlunderWarning(null);
+  }, []);
 
   const selectSquare = useCallback((square) => {
     // Can't interact during AI turn or game over
@@ -202,6 +237,20 @@ export function useChessGame(initialDifficulty = 'easy') {
     setWinner(null);
   }, [isAiThinking, moveHistory.length]);
 
+  const requestHint = useCallback(() => {
+    if (isAiThinking || gameStatus !== 'playing' || chessRef.current.turn() !== 'w') return;
+    const hint = getHint(chessRef.current);
+    if (hint) {
+      setHintMove({ from: hint.move.from, to: hint.move.to });
+      setHintInfo({ reason: hint.reason });
+    }
+  }, [isAiThinking, gameStatus]);
+
+  const dismissHint = useCallback(() => {
+    setHintMove(null);
+    setHintInfo(null);
+  }, []);
+
   const newGame = useCallback((newDifficulty) => {
     chessRef.current.reset();
     setPosition(INITIAL_FEN);
@@ -212,6 +261,10 @@ export function useChessGame(initialDifficulty = 'easy') {
     setWinner(null);
     setMoveHistory([]);
     setLastMove(null);
+    setHintMove(null);
+    setHintInfo(null);
+    setBlunderWarning(null);
+    pendingMoveRef.current = null;
   }, [difficulty]);
 
   const getBoardState = useCallback(() => {
@@ -235,6 +288,9 @@ export function useChessGame(initialDifficulty = 'easy') {
     showHighlights,
     lastMove,
     pieceStyle,
+    hintMove,
+    hintInfo,
+    blunderWarning,
 
     // Actions
     selectSquare,
@@ -245,5 +301,9 @@ export function useChessGame(initialDifficulty = 'easy') {
     setShowHighlights,
     setPieceStyle,
     getBoardState,
+    requestHint,
+    dismissHint,
+    confirmBlunder,
+    cancelBlunder,
   };
 }

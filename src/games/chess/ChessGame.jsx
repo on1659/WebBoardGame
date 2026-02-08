@@ -7,10 +7,14 @@ import Controls from './components/Controls';
 import MoveHistory from './components/MoveHistory';
 import Settings from './components/Settings';
 import GameOverModal from './components/GameOverModal';
+import TutorialMode from './tutorial/TutorialMode';
+import PuzzleMode from './puzzles/PuzzleMode';
+import BlunderModal from './components/BlunderModal';
+import HintDisplay from './components/HintDisplay';
 import styles from './ChessGame.module.css';
 
 export default function ChessGame({ onBack }) {
-  const [gameStarted, setGameStarted] = useState(false);
+  const [mode, setMode] = useState('menu'); // 'menu' | 'game' | 'tutorial' | 'puzzle'
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showGameOverModal, setShowGameOverModal] = useState(true);
 
@@ -18,12 +22,12 @@ export default function ChessGame({ onBack }) {
 
   const handleDifficultySelect = useCallback((difficulty) => {
     game.newGame(difficulty);
-    setGameStarted(true);
+    setMode('game');
     setShowGameOverModal(true);
   }, [game]);
 
   const handleNewGame = useCallback(() => {
-    setGameStarted(false);
+    setMode('menu');
     setShowGameOverModal(true);
   }, []);
 
@@ -36,10 +40,22 @@ export default function ChessGame({ onBack }) {
     setShowGameOverModal(false);
   }, []);
 
-  if (!gameStarted) {
+  if (mode === 'tutorial') {
+    return <TutorialMode onBack={() => setMode('menu')} />;
+  }
+
+  if (mode === 'puzzle') {
+    return <PuzzleMode onBack={() => setMode('menu')} />;
+  }
+
+  if (mode === 'menu') {
     return (
       <div>
-        <DifficultySelect onSelect={handleDifficultySelect} />
+        <DifficultySelect
+          onSelect={handleDifficultySelect}
+          onTutorial={() => setMode('tutorial')}
+          onPuzzle={() => setMode('puzzle')}
+        />
         <button className={styles.backButton} onClick={onBack}>
           🏠 홈으로
         </button>
@@ -79,15 +95,24 @@ export default function ChessGame({ onBack }) {
             onSquareClick={game.selectSquare}
             isAiThinking={game.isAiThinking}
             pieceStyle={game.pieceStyle}
+            hintMove={game.hintMove}
           />
 
           <Controls
             onUndo={game.undo}
             onNewGame={handleNewGame}
             onOpenSettings={() => setSettingsOpen(true)}
+            onHint={game.requestHint}
             canUndo={game.moveHistory.length >= 2}
             isAiThinking={game.isAiThinking}
           />
+
+          {game.hintInfo && (
+            <HintDisplay
+              reason={game.hintInfo.reason}
+              onDismiss={game.dismissHint}
+            />
+          )}
         </div>
 
         <div className={styles.sidePanel}>
@@ -112,6 +137,13 @@ export default function ChessGame({ onBack }) {
         winner={game.winner}
         onNewGame={handleNewGameFromModal}
         onClose={handleCloseGameOverModal}
+      />
+
+      <BlunderModal
+        isOpen={game.blunderWarning !== null}
+        message={game.blunderWarning}
+        onConfirm={game.confirmBlunder}
+        onUndo={game.cancelBlunder}
       />
     </div>
   );

@@ -10,6 +10,7 @@ export default function Square({
   isCapture,
   isCheck,
   isLastMove,
+  isHint,
   onClick,
   pieceStyle,
 }) {
@@ -25,6 +26,7 @@ export default function Square({
     if (isSelected) classes.push(styles.selected);
     if (isCheck) classes.push(styles.check);
     if (isLastMove) classes.push(styles.lastMove);
+    if (isHint) classes.push(styles.hint);
 
     return classes.join(' ');
   };

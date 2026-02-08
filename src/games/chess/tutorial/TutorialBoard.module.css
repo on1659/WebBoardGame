@@ -1,0 +1,47 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: min(400px, 90vw);
+  height: min(400px, 90vw);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-medium);
+}
+
+.square {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.light {
+  background-color: #f0d9b5;
+}
+
+.dark {
+  background-color: #b58863;
+}
+
+.highlighted {
+  position: relative;
+}
+
+.highlighted::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 0, 0.5);
+  border: 3px solid rgba(255, 200, 0, 0.8);
+  animation: glow 1.2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes glow {
+  from { transform: scale(0.9); opacity: 0.6; }
+  to { transform: scale(1.05); opacity: 1; }
+}

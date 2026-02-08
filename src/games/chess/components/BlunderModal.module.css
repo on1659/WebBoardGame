@@ -1,0 +1,72 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 360px;
+  width: 90%;
+  box-shadow: var(--shadow-medium);
+  text-align: center;
+  animation: popIn 0.3s ease-out;
+}
+
+.message {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.5;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.undoButton {
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #a8d5ba, #7bc89c);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--color-text-primary);
+  min-height: 52px;
+  box-shadow: var(--shadow-soft);
+}
+
+.undoButton:hover {
+  transform: scale(1.03);
+}
+
+.confirmButton {
+  padding: var(--spacing-md);
+  background: var(--color-button-primary);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  min-height: 48px;
+}
+
+.confirmButton:hover {
+  transform: scale(1.03);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

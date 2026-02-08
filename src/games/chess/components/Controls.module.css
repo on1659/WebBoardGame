@@ -30,6 +30,14 @@
   cursor: not-allowed;
 }
 
+.hintButton {
+  background: #fff9c4;
+}
+
+.hintButton:hover:not(:disabled) {
+  background: #fff176;
+}
+
 .settingsButton {
   min-width: 48px;
   padding: var(--spacing-sm);

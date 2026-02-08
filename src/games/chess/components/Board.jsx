@@ -13,6 +13,7 @@ export default function Board({
   onSquareClick,
   isAiThinking,
   pieceStyle,
+  hintMove,
 }) {
   const validMoveSquares = useMemo(() => {
     return new Set(validMoves.map(m => m.to));
@@ -42,12 +43,13 @@ export default function Board({
           isCapture: showHighlights && captureSquares.has(square),
           isCheck: isCheck && square === kingSquare,
           isLastMove: lastMove && (square === lastMove.from || square === lastMove.to),
+          isHint: hintMove && (square === hintMove.from || square === hintMove.to),
         });
       }
     }
 
     return result;
-  }, [boardState, selectedSquare, validMoveSquares, captureSquares, kingSquare, isCheck, lastMove, showHighlights]);
+  }, [boardState, selectedSquare, validMoveSquares, captureSquares, kingSquare, isCheck, lastMove, showHighlights, hintMove]);
 
   return (
     <div className={`${styles.board} ${isAiThinking ? styles.thinking : ''}`}>

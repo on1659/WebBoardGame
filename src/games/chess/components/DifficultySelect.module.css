@@ -68,6 +68,59 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.extraButtons {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 400px;
+}
+
+.learnButton,
+.puzzleButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-soft);
+  min-height: 80px;
+  font-size: var(--font-size-md);
+}
+
+.learnButton {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+}
+
+.puzzleButton {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+}
+
+.learnButton:hover,
+.puzzleButton:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-medium);
+}
+
+.extraEmoji {
+  font-size: 32px;
+}
+
+.extraLabel {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.progressBadge {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
 @media (min-width: 600px) {
   .buttons {
     flex-direction: row;

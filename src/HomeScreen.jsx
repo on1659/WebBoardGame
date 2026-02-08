@@ -1,11 +1,22 @@
+import { getTotalProgress } from './games/chess/progress';
 import styles from './HomeScreen.module.css';
+
+function getChessDescription() {
+  try {
+    const p = getTotalProgress();
+    if (p.tutorialsCompleted > 0 || p.puzzlesCompleted > 0) {
+      return `📚 ${p.tutorialsCompleted}/${p.tutorialsTotal} 🧩 ${p.puzzlesCompleted}/${p.puzzlesTotal}`;
+    }
+  } catch {}
+  return '말을 움직여서 왕을 잡아요!';
+}
 
 const games = [
   {
     id: 'chess',
     emoji: '♟️',
     name: '체스',
-    description: '말을 움직여서 왕을 잡아요!',
+    get description() { return getChessDescription(); },
     color: '#a8d5ba',
     available: true,
   },

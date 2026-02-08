@@ -4,6 +4,7 @@ export default function Controls({
   onUndo,
   onNewGame,
   onOpenSettings,
+  onHint,
   canUndo,
   isAiThinking,
 }) {
@@ -15,6 +16,14 @@ export default function Controls({
         disabled={!canUndo || isAiThinking}
       >
         ↩️ 무르기
+      </button>
+
+      <button
+        className={`${styles.button} ${styles.hintButton}`}
+        onClick={onHint}
+        disabled={isAiThinking}
+      >
+        💡 힌트
       </button>
 
       <button
