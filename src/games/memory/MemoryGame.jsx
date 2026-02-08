@@ -4,9 +4,10 @@ import { submitScore } from '../../profile/api';
 import { usePlayTracking } from '../../hooks/usePlayTracking';
 import styles from './MemoryGame.module.css';
 
-const EMOJI_SETS = {
-  animals: ['🐶','🐱','🐰','🦊','🐻','🐼','🐨','🦁','🐸','🐵','🐯','🐮'],
-  fruits: ['🍎','🍊','🍋','🍇','🍓','🍑','🍒','🥝','🍌','🍉','🫐','🥭'],
+const EMOJI_BY_DIFFICULTY = {
+  easy: ['🐶','🐱','🐰','🦊','🐻','🐼'],
+  medium: ['🐶','🐱','🐰','🦊','🐻','🐼','🐨','🦁'],
+  hard: ['🐶','🐱','🐰','🦊','🐻','🐼','🐨','🦁','🐸','🐵','🦄','🐧'],
 };
 
 const DIFFICULTIES = {
@@ -41,8 +42,7 @@ export default function MemoryGame({ onBack }) {
   const startGame = useCallback((diff) => {
     const { rows, cols } = DIFFICULTIES[diff];
     const pairCount = (rows * cols) / 2;
-    const allEmojis = shuffle([...EMOJI_SETS.animals, ...EMOJI_SETS.fruits]);
-    const chosen = allEmojis.slice(0, pairCount);
+    const chosen = EMOJI_BY_DIFFICULTY[diff].slice(0, pairCount);
     const deck = shuffle([...chosen, ...chosen]).map((emoji, i) => ({ id: i, emoji }));
     setCards(deck);
     setFlipped([]);
@@ -153,7 +153,7 @@ export default function MemoryGame({ onBack }) {
               onClick={() => handleFlip(idx)}
             >
               <div className={styles.cardInner}>
-                <div className={styles.cardFront}>❓</div>
+                <div className={styles.cardFront}>⭐</div>
                 <div className={styles.cardBack}>{card.emoji}</div>
               </div>
             </button>

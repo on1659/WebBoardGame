@@ -24,8 +24,6 @@ const GAMES = [
   { id: 'othello_medium', name: '🟢 오델로 보통', metric: 'wins', unit: '승', lower: false },
   { id: 'connect4_easy', name: '🔴 사목 쉬움', metric: 'wins', unit: '승', lower: false },
   { id: 'connect4_medium', name: '🔴 사목 보통', metric: 'wins', unit: '승', lower: false },
-  { id: 'tictactoe_easy', name: '❌ 틱택토 쉬움', metric: 'wins', unit: '승', lower: false },
-  { id: 'tictactoe_medium', name: '❌ 틱택토 보통', metric: 'wins', unit: '승', lower: false },
 ];
 
 const MEDALS = ['🥇','🥈','🥉'];

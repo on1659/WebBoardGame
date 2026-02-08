@@ -6,7 +6,6 @@ import ChessGame from './games/chess/ChessGame';
 import GomokuGame from './games/gomoku/GomokuGame';
 import OthelloGame from './games/othello/OthelloGame';
 import Connect4Game from './games/connect4/Connect4Game';
-import TicTacToeGame from './games/tictactoe/TicTacToeGame';
 import MemoryGame from './games/memory/MemoryGame';
 import SudokuGame from './games/sudoku/SudokuGame';
 import MinesweeperGame from './games/minesweeper/MinesweeperGame';
@@ -110,11 +109,6 @@ function AppInner() {
   if (currentGame === 'connect4') {
     if (!user) { setShowLogin(true); return null; }
     return <Connect4Game onBack={handleBack} />;
-  }
-
-  if (currentGame === 'tictactoe') {
-    if (!user) { setShowLogin(true); return null; }
-    return <TicTacToeGame onBack={handleBack} />;
   }
 
   return (

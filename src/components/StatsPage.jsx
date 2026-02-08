@@ -8,7 +8,6 @@ const GAME_INFO = {
   gomoku: { emoji: '⚫', name: '오목' },
   othello: { emoji: '🟢', name: '오델로' },
   connect4: { emoji: '🔴', name: '사목' },
-  tictactoe: { emoji: '❌', name: '틱택토' },
   memory: { emoji: '🃏', name: '카드 짝맞추기' },
   sudoku: { emoji: '🧩', name: '미니 스도쿠' },
   minesweeper: { emoji: '💣', name: '미니 지뢰찾기' },
