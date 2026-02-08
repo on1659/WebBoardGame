@@ -1,0 +1,36 @@
+.piece {
+  font-size: var(--font-size-piece);
+  line-height: 1;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.piece[data-color="w"] {
+  color: #ffffff;
+  text-shadow:
+    0 0 2px #333,
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.piece[data-color="b"] {
+  color: #333333;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.selected {
+  transform: scale(1.1);
+  animation: pulse 0.3s ease-in-out;
+}
+
+.dragging {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1.1); }
+  50% { transform: scale(1.15); }
+}

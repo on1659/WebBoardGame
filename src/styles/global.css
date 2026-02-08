@@ -1,0 +1,99 @@
+@import './variables.css';
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* iOS Safari Fixes */
+html {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body {
+  height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  font-family: var(--font-family-primary);
+  background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+  color: var(--color-text-primary);
+
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  user-select: none;
+
+  /* Prevent callout on long press */
+  -webkit-touch-callout: none;
+
+  /* Prevent tap highlight */
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  overflow: auto;
+}
+
+/* Button base styles */
+button {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-pulse {
+  animation: pulse 0.3s ease-in-out;
+}
