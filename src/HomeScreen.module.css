@@ -16,32 +16,34 @@
   gap: var(--spacing-sm);
 }
 
-.progressButton,
-.logoutButton {
-  padding: var(--spacing-sm) var(--spacing-md);
+.topBtn {
+  width: 44px;
+  height: 44px;
   background: white;
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
+  border-radius: var(--border-radius-round);
+  font-size: 20px;
   box-shadow: var(--shadow-soft);
-  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.loginButton {
-  padding: var(--spacing-sm) var(--spacing-md);
+.topBtnLogin {
+  width: 44px;
+  height: 44px;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
-  color: white;
+  border-radius: var(--border-radius-round);
+  font-size: 20px;
   box-shadow: var(--shadow-soft);
-  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-left: auto;
 }
 
-.progressButton:hover,
-.logoutButton:hover,
-.loginButton:hover {
-  transform: scale(1.05);
+.topBtn:hover,
+.topBtnLogin:hover {
+  transform: scale(1.1);
   box-shadow: var(--shadow-medium);
 }
 

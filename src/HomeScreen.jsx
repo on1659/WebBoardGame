@@ -41,30 +41,16 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
       <div className={styles.topBar}>
         {isLoggedIn ? (
           <>
-            <button className={styles.progressButton} onClick={onShowProgress}>
-              📊 진행도
-            </button>
-            <button className={styles.progressButton} onClick={onShowLeaderboard}>
-              🏆 순위
-            </button>
-            <button className={styles.progressButton} onClick={onShowStats}>
-              📊 통계
-            </button>
-            <button className={styles.logoutButton} onClick={onLogout}>
-              👋 다른 친구
-            </button>
+            <button className={styles.topBtn} onClick={onShowProgress}>📊</button>
+            <button className={styles.topBtn} onClick={onShowLeaderboard}>🏆</button>
+            <button className={styles.topBtn} onClick={onShowStats}>📈</button>
+            <button className={styles.topBtn} onClick={onLogout}>👋</button>
           </>
         ) : (
           <>
-            <button className={styles.progressButton} onClick={onShowLeaderboard}>
-              🏆 순위
-            </button>
-            <button className={styles.progressButton} onClick={onShowStats}>
-              📊 통계
-            </button>
-            <button className={styles.loginButton} onClick={onLogin}>
-              🔑 로그인
-            </button>
+            <button className={styles.topBtn} onClick={onShowLeaderboard}>🏆</button>
+            <button className={styles.topBtn} onClick={onShowStats}>📈</button>
+            <button className={styles.topBtnLogin} onClick={onLogin}>🔑</button>
           </>
         )}
       </div>
