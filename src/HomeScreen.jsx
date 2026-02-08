@@ -27,13 +27,13 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
 
   const games = [
     { id: 'chess', emoji: '♟️', name: '체스', description: chessDesc, color: '#a8d5ba', available: true },
+    { id: 'baduk', emoji: '⚪', name: '바둑', description: '돌로 땅을 많이 차지해요!', color: '#d1c4e9', available: true },
     { id: 'gomoku', emoji: '⚫', name: '오목', description: '다섯 개를 한 줄로 놓으면 이겨요!', color: '#f8bbd9', available: true },
     { id: 'othello', emoji: '🟢', name: '오델로', description: '돌을 뒤집어서 많이 차지해요!', color: '#c8e6c9', available: true },
     { id: 'connect4', emoji: '🔴', name: '사목', description: '네 개를 한 줄로 놓으면 이겨요!', color: '#bbdefb', available: true },
     { id: 'memory', emoji: '🃏', name: '카드 짝맞추기', description: '같은 카드를 찾아 뒤집어요!', color: '#e1bee7', available: true },
     { id: 'sudoku', emoji: '🧩', name: '미니 스도쿠', description: '숫자 퍼즐! 1~4를 채워봐!', color: '#b2dfdb', available: true },
     { id: 'minesweeper', emoji: '💣', name: '미니 지뢰찾기', description: '지뢰를 피해서 칸을 열어봐!', color: '#ffcdd2', available: true },
-    { id: 'baduk', emoji: '⚪', name: '바둑', description: '돌로 땅을 많이 차지해요!', color: '#d1c4e9', available: true },
   ];
 
   return (
