@@ -18,6 +18,9 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
   const games = [
     { id: 'chess', emoji: '♟️', name: '체스', description: chessDesc, color: '#a8d5ba', available: true },
     { id: 'gomoku', emoji: '⚫', name: '오목', description: '다섯 개를 한 줄로 놓으면 이겨요!', color: '#f8bbd9', available: true },
+    { id: 'othello', emoji: '🟢', name: '오델로', description: '돌을 뒤집어서 많이 차지해요!', color: '#c8e6c9', available: true },
+    { id: 'connect4', emoji: '🔴', name: '사목', description: '네 개를 한 줄로 놓으면 이겨요!', color: '#bbdefb', available: true },
+    { id: 'tictactoe', emoji: '❌', name: '틱택토', description: '세 개를 한 줄로! 간단하고 재밌어요!', color: '#ffccbc', available: true },
     { id: 'baduk', emoji: '⚪', name: '바둑', description: '곧 만나요!', color: '#d1c4e9', available: false },
   ];
 

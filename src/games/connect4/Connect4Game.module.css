@@ -1,0 +1,92 @@
+.setup, .container {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--spacing-lg); max-width: 500px; width: 100%;
+  animation: fadeIn 0.5s ease-out;
+}
+.setupTitle { font-size: var(--font-size-xxl); animation: bounce 2s ease infinite; }
+.setupSub { font-size: var(--font-size-lg); color: var(--color-text-secondary); text-align: center; }
+.diffSection { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
+.label { font-size: var(--font-size-lg); font-weight: bold; }
+.diffBtns { display: flex; gap: var(--spacing-md); }
+.diffBtn {
+  padding: var(--spacing-md) var(--spacing-lg); background: white;
+  border-radius: var(--border-radius-lg); font-size: var(--font-size-md);
+  box-shadow: var(--shadow-soft); min-height: 48px; border: 3px solid transparent;
+}
+.active { border-color: var(--color-button-primary); background: var(--color-bg-secondary); transform: scale(1.05); }
+.diffBtn:hover { transform: scale(1.08); }
+.startBtn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: linear-gradient(135deg, #ef5350, #e53935);
+  border-radius: var(--border-radius-lg); font-size: var(--font-size-xl);
+  color: white; box-shadow: var(--shadow-medium); min-height: 56px;
+  animation: pulse 2s ease infinite;
+}
+.startBtn:hover { transform: scale(1.08); }
+.backBtn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--color-accent-lavender); border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-lg); box-shadow: var(--shadow-soft); min-height: 48px;
+}
+.backBtn:hover { transform: scale(1.05); }
+
+.header { display: flex; align-items: center; justify-content: center; gap: var(--spacing-md); position: relative; width: 100%; }
+.title { font-size: var(--font-size-xl); }
+.homeBtn {
+  position: absolute; left: 0; background: var(--color-button-primary);
+  border-radius: var(--border-radius-round); width: 48px; height: 48px;
+  font-size: 24px; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-soft);
+}
+.homeBtn:hover { transform: scale(1.1); }
+
+.status {
+  font-size: var(--font-size-lg); font-weight: bold;
+  padding: var(--spacing-sm) var(--spacing-lg); background: white;
+  border-radius: var(--border-radius-lg); box-shadow: var(--shadow-soft);
+}
+
+.boardFrame {
+  background: #1565c0; border-radius: 16px; padding: 12px;
+  box-shadow: var(--shadow-medium);
+}
+.board {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+}
+.cell {
+  width: 52px; height: 52px; background: #0d47a1; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; padding: 4px;
+}
+.cell:not(:disabled):hover { background: #1976d2; }
+.cell:disabled { cursor: default; }
+.hoverCell { background: #1976d2; }
+.winCell { animation: winGlow 0.6s ease infinite; }
+
+.piece {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: #0d47a1; transition: background 0.1s;
+}
+.red {
+  background: radial-gradient(circle at 35% 35%, #ff5252, #c62828);
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3);
+}
+.yellow {
+  background: radial-gradient(circle at 35% 35%, #ffee58, #f9a825);
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2);
+}
+.dropping { animation: drop 0.4s ease-in; }
+
+.controls { display: flex; gap: var(--spacing-md); }
+.ctrlBtn {
+  padding: var(--spacing-sm) var(--spacing-lg); background: var(--color-button-primary);
+  border-radius: var(--border-radius-lg); font-size: var(--font-size-md);
+  box-shadow: var(--shadow-soft); min-height: 48px;
+}
+.ctrlBtn:hover { transform: scale(1.05); }
+
+@keyframes fadeIn { from{opacity:0}to{opacity:1} }
+@keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
+@keyframes pulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.05)} }
+@keyframes drop { 0%{transform:translateY(-200px);opacity:0.5}70%{transform:translateY(10px)}100%{transform:translateY(0);opacity:1} }
+@keyframes winGlow { 0%,100%{box-shadow:0 0 8px #fff59d}50%{box-shadow:0 0 20px #ffee58} }

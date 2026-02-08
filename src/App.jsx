@@ -4,6 +4,9 @@ import HomeScreen from './HomeScreen';
 import ProgressPage from './profile/ProgressPage';
 import ChessGame from './games/chess/ChessGame';
 import GomokuGame from './games/gomoku/GomokuGame';
+import OthelloGame from './games/othello/OthelloGame';
+import Connect4Game from './games/connect4/Connect4Game';
+import TicTacToeGame from './games/tictactoe/TicTacToeGame';
 import { useState, useCallback } from 'react';
 
 function AppInner() {
@@ -36,6 +39,18 @@ function AppInner() {
 
   if (currentGame === 'gomoku') {
     return <GomokuGame onBack={handleBack} />;
+  }
+
+  if (currentGame === 'othello') {
+    return <OthelloGame onBack={handleBack} />;
+  }
+
+  if (currentGame === 'connect4') {
+    return <Connect4Game onBack={handleBack} />;
+  }
+
+  if (currentGame === 'tictactoe') {
+    return <TicTacToeGame onBack={handleBack} />;
   }
 
   return (
