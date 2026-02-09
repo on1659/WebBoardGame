@@ -208,3 +208,10 @@
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 @keyframes dropIn { from { transform: translateY(-60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+.stepMsg {
+  font-size: 18px; font-weight: bold; color: #ff9800; text-align: center;
+  padding: 8px 16px; background: #fff3e0; border-radius: 12px; animation: popIn 0.3s ease;
+}
+.diffBadge { font-size: 12px; margin-left: 4px; }
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }

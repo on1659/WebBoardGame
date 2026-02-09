@@ -188,3 +188,9 @@
 @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+.stepMsg {
+  font-size: 18px; font-weight: bold; color: #ff9800; text-align: center;
+  padding: 8px 16px; background: #fff3e0; border-radius: 12px; animation: popIn 0.3s ease;
+}
+.diffBadge { font-size: 12px; margin-left: 4px; }

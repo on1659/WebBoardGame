@@ -14,31 +14,66 @@ export default function GomokuPuzzle({ onBack }) {
   const [selectedPuzzle, setSelectedPuzzle] = useState(null);
   const [result, setResult] = useState(null);
   const [showHint, setShowHint] = useState(false);
-  const [placedStone, setPlacedStone] = useState(null);
+  const [placedStones, setPlacedStones] = useState([]);
+  const [opponentStones, setOpponentStones] = useState([]);
+  const [moveStep, setMoveStep] = useState(0); // 0=첫수, 1=두번째수
+  const [stepMsg, setStepMsg] = useState(null);
   const completedPuzzles = getCompletedGomokuPuzzles();
 
   const handleCellClick = useCallback((r, c) => {
     if (!selectedPuzzle || result === 'correct') return;
+    // 이미 놓인 돌이면 무시
     if (selectedPuzzle.board[r][c] !== 0) return;
+    if (placedStones.some(s => s.r === r && s.c === c)) return;
+    if (opponentStones.some(s => s.r === r && s.c === c)) return;
 
-    const sol = selectedPuzzle.solution;
-    if (r === sol.r && c === sol.c) {
-      setResult('correct');
-      setPlacedStone({ r, c });
-      completeGomokuPuzzle(selectedPuzzle.id);
-      confetti({
-        particleCount: 150, spread: 80, origin: { y: 0.6 },
-        colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'],
-      });
+    if (!selectedPuzzle.multiMove) {
+      // 1수 퍼즐
+      const sol = selectedPuzzle.solution;
+      if (r === sol.r && c === sol.c) {
+        setResult('correct');
+        setPlacedStones([{ r, c }]);
+        completeGomokuPuzzle(selectedPuzzle.id);
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 },
+          colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'] });
+      } else {
+        setResult('wrong');
+      }
     } else {
-      setResult('wrong');
-      setPlacedStone(null);
+      // 2수 퍼즐
+      const move = selectedPuzzle.moves[moveStep];
+      if (r === move.r && c === move.c) {
+        const newPlaced = [...placedStones, { r, c }];
+        setPlacedStones(newPlaced);
+
+        if (moveStep === 0) {
+          setStepMsg('좋아! 👏 상대가 막아요...');
+          // 상대 응수 0.6초 후
+          setTimeout(() => {
+            setOpponentStones([selectedPuzzle.opponentMove]);
+            setMoveStep(1);
+            setStepMsg('이제 마지막 한 수!');
+            setTimeout(() => setStepMsg(null), 1500);
+          }, 600);
+        } else {
+          setResult('correct');
+          completeGomokuPuzzle(selectedPuzzle.id);
+          setStepMsg(null);
+          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 },
+            colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'] });
+        }
+      } else {
+        setResult('wrong');
+      }
     }
-  }, [selectedPuzzle, result]);
+  }, [selectedPuzzle, result, moveStep, placedStones, opponentStones]);
 
   const handleRetry = useCallback(() => {
     setResult(null);
-    setPlacedStone(null);
+    setPlacedStones([]);
+    setOpponentStones([]);
+    setMoveStep(0);
+    setStepMsg(null);
     setShowHint(false);
   }, []);
 
@@ -46,7 +81,7 @@ export default function GomokuPuzzle({ onBack }) {
     const idx = puzzles.findIndex(p => p.id === selectedPuzzle.id);
     if (idx < puzzles.length - 1) {
       setSelectedPuzzle(puzzles[idx + 1]);
-      setResult(null); setPlacedStone(null); setShowHint(false);
+      setResult(null); setPlacedStones([]); setOpponentStones([]); setMoveStep(0); setStepMsg(null); setShowHint(false);
     } else {
       setSelectedPuzzle(null);
     }
@@ -56,7 +91,7 @@ export default function GomokuPuzzle({ onBack }) {
     return (
       <div className={styles.container}>
         <h1 className={styles.title}>🧩 오목 퍼즐</h1>
-        <p className={styles.subtitle}>한 수로 5줄을 만들어봐!</p>
+        <p className={styles.subtitle}>돌을 놓아서 5줄을 만들어봐!</p>
         <div className={styles.puzzleList}>
           {puzzles.map((puzzle, index) => {
             const isCompleted = completedPuzzles.includes(puzzle.id);
@@ -66,12 +101,13 @@ export default function GomokuPuzzle({ onBack }) {
                 className={`${styles.puzzleCard} ${isCompleted ? styles.completed : ''}`}
                 onClick={() => {
                   setSelectedPuzzle(puzzle);
-                  setResult(null); setPlacedStone(null); setShowHint(false);
+                  setResult(null); setPlacedStones([]); setOpponentStones([]); setMoveStep(0); setStepMsg(null); setShowHint(false);
                 }}
                 style={{ animationDelay: `${index * 0.06}s` }}
               >
                 <span className={styles.puzzleNumber}>#{puzzle.id}</span>
                 <span className={styles.puzzleTitle}>{puzzle.title}</span>
+                {puzzle.multiMove && <span className={styles.diffBadge}>⭐⭐</span>}
                 {isCompleted && <span className={styles.checkmark}>✅</span>}
               </button>
             );
@@ -104,9 +140,10 @@ export default function GomokuPuzzle({ onBack }) {
         >
           {board.map((row, r) =>
             row.map((cell, c) => {
-              const isPlaced = placedStone && placedStone.r === r && placedStone.c === c;
-              const showCell = cell !== 0 || isPlaced;
-              const color = isPlaced ? 1 : cell;
+              const isPlayerPlaced = placedStones.some(s => s.r === r && s.c === c);
+              const isOpponentPlaced = opponentStones.some(s => s.r === r && s.c === c);
+              const showCell = cell !== 0 || isPlayerPlaced || isOpponentPlaced;
+              const color = isPlayerPlaced ? 1 : isOpponentPlaced ? 2 : cell;
               return (
                 <button
                   key={`${r}-${c}`}
@@ -122,11 +159,14 @@ export default function GomokuPuzzle({ onBack }) {
                   {isStarPoint(r, c, boardSize) && !showCell && (
                     <div className={styles.starPoint} />
                   )}
-                  {showHint && !showCell && r === selectedPuzzle.solution.r && c === selectedPuzzle.solution.c && (
+                  {showHint && !showCell && !selectedPuzzle.multiMove && r === selectedPuzzle.solution.r && c === selectedPuzzle.solution.c && (
+                    <div className={styles.solutionHighlight} />
+                  )}
+                  {showHint && !showCell && selectedPuzzle.multiMove && selectedPuzzle.moves[moveStep] && r === selectedPuzzle.moves[moveStep].r && c === selectedPuzzle.moves[moveStep].c && (
                     <div className={styles.solutionHighlight} />
                   )}
                   {showCell && (
-                    <div className={`${styles.stone} ${color === 1 ? styles.blackStone : styles.whiteStone} ${isPlaced ? styles.stoneNew : ''}`} />
+                    <div className={`${styles.stone} ${color === 1 ? styles.blackStone : styles.whiteStone} ${(isPlayerPlaced || isOpponentPlaced) ? styles.stoneNew : ''}`} />
                   )}
                 </button>
               );
@@ -134,6 +174,10 @@ export default function GomokuPuzzle({ onBack }) {
           )}
         </div>
       </div>
+
+      {stepMsg && !result && (
+        <div className={styles.stepMsg}>{stepMsg}</div>
+      )}
 
       {result === 'correct' && (
         <div className={styles.resultCorrect}>

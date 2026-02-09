@@ -82,4 +82,47 @@ export const puzzles = [
     solution: { from: 'h5', to: 'f7' },
     hint: 'f7은 약한 칸이야! 퀸으로 공격해봐!',
   },
+  // ===== 2수 체크메이트 (⭐⭐) =====
+  // multiMove 퍼즐: 첫 수를 두면 → 상대 자동 응수 → 두 번째 수로 체크메이트
+  {
+    id: 11,
+    title: '더블 룩 메이트!',
+    description: '룩 2개로 2수 체크메이트! 🏰🏰',
+    multiMove: true,
+    // 백: Ra7, Rb1, Kg1, f2,g2,h2 / 흑: Kg8, f7,g7,h7
+    // Rb8+ → Rf8(유일한 블록) → Rxf8#
+    fen: '6k1/R4ppp/8/8/8/8/5PPP/1R4K1 w - - 0 1',
+    moves: [{ from: 'b1', to: 'b8' }],
+    hint: '룩으로 8번 줄 체크! 상대가 막으면 다른 룩이 잡아!',
+  },
+  {
+    id: 12,
+    title: '퀸 희생! 💥',
+    description: '퀸을 희생해서 메이트! 대담하게!',
+    multiMove: true,
+    // Qa8+! Rxa8 → Re8# (백랭크 메이트)
+    fen: 'r5k1/5ppp/8/8/8/8/Q4PPP/4R1K1 w - - 0 1',
+    moves: [{ from: 'a2', to: 'a8' }],
+    hint: '퀸을 a8로! 상대가 잡아도 룩이 기다리고 있어!',
+  },
+  {
+    id: 13,
+    title: '킹 몰아넣기!',
+    description: '킹을 구석으로 몰아서 메이트! 👑',
+    multiMove: true,
+    // Qh7+! Kf8 → Qf7# (또는 Qh8#)
+    fen: '5k2/5p2/8/8/8/8/5PPQ/6K1 w - - 0 1',
+    moves: [{ from: 'h2', to: 'h8' }],
+    hint: '퀸으로 h8 체크! 킹이 도망가면 마무리!',
+  },
+  {
+    id: 14,
+    title: '백랭크 콤보!',
+    description: '백랭크 약점을 이용한 2수 메이트! 🎯',
+    multiMove: true,
+    // Re8+! Rxe8 → Rxe8# (더블 룩 백랭크)
+    fen: 'r3r1k1/5ppp/8/8/8/8/5PPP/2R1R1K1 w - - 0 1',
+    moves: [{ from: 'e1', to: 'e8' }],
+    hint: 'e줄 룩으로 체크! 잡으면 다른 룩이!',
+  },
 ];

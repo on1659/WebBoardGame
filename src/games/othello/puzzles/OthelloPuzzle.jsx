@@ -32,66 +32,105 @@ function getValidMoves(board, player) {
   return moves;
 }
 
+function applyMove(board, r, c, player) {
+  const nb = board.map(row => [...row]);
+  const flips = getFlips(board, r, c, player);
+  nb[r][c] = player;
+  for (const [fr, fc] of flips) nb[fr][fc] = player;
+  return nb;
+}
+
 export default function OthelloPuzzle({ onBack }) {
   const [selectedPuzzle, setSelectedPuzzle] = useState(null);
   const [result, setResult] = useState(null);
   const [showHint, setShowHint] = useState(false);
   const [boardState, setBoardState] = useState(null);
+  const [moveStep, setMoveStep] = useState(0);
+  const [stepMsg, setStepMsg] = useState(null);
   const completedPuzzles = getCompletedOthelloPuzzles();
 
+  const currentPlayer = useMemo(() => {
+    if (!selectedPuzzle) return BLACK;
+    return selectedPuzzle.playerColor || BLACK;
+  }, [selectedPuzzle]);
+
   const validMoves = useMemo(() => {
-    if (!selectedPuzzle || result === 'correct') return [];
+    if (!selectedPuzzle || result === 'correct' || stepMsg) return [];
     const b = boardState || selectedPuzzle.board;
-    return getValidMoves(b, selectedPuzzle.playerColor);
-  }, [selectedPuzzle, result, boardState]);
+    return getValidMoves(b, currentPlayer);
+  }, [selectedPuzzle, result, boardState, currentPlayer, stepMsg]);
 
   const validSet = useMemo(() => new Set(validMoves.map(([r, c]) => `${r}-${c}`)), [validMoves]);
 
   const handleCellClick = useCallback((r, c) => {
-    if (!selectedPuzzle || result === 'correct') return;
+    if (!selectedPuzzle || result === 'correct' || stepMsg) return;
     const board = boardState || selectedPuzzle.board;
-    const flips = getFlips(board, r, c, selectedPuzzle.playerColor);
+    const flips = getFlips(board, r, c, currentPlayer);
     if (flips.length === 0) return;
 
-    const sol = selectedPuzzle.solution;
-    if (r === sol.r && c === sol.c) {
-      // Apply the move visually
-      const nb = board.map(row => [...row]);
-      nb[r][c] = selectedPuzzle.playerColor;
-      for (const [fr, fc] of flips) nb[fr][fc] = selectedPuzzle.playerColor;
-      setBoardState(nb);
-      setResult('correct');
-      completeOthelloPuzzle(selectedPuzzle.id);
-      confetti({
-        particleCount: 150, spread: 80, origin: { y: 0.6 },
-        colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'],
-      });
+    if (!selectedPuzzle.multiMove) {
+      // 1수 퍼즐
+      const sol = selectedPuzzle.solution;
+      if (r === sol.r && c === sol.c) {
+        setBoardState(applyMove(board, r, c, currentPlayer));
+        setResult('correct');
+        completeOthelloPuzzle(selectedPuzzle.id);
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 },
+          colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'] });
+      } else {
+        setResult('wrong');
+      }
     } else {
-      setResult('wrong');
+      // 2수 퍼즐
+      const move = selectedPuzzle.moves[moveStep];
+      if (r === move.r && c === move.c) {
+        const nb = applyMove(board, r, c, currentPlayer);
+        setBoardState(nb);
+
+        if (moveStep === 0) {
+          setStepMsg('좋아! 👏 상대가 둡니다...');
+          setTimeout(() => {
+            const opp = selectedPuzzle.opponentMove;
+            const oppPlayer = currentPlayer === BLACK ? WHITE : BLACK;
+            const nb2 = applyMove(nb, opp.r, opp.c, oppPlayer);
+            setBoardState(nb2);
+            setMoveStep(1);
+            setStepMsg('이제 마지막 한 수!');
+            setTimeout(() => setStepMsg(null), 1500);
+          }, 600);
+        } else {
+          setResult('correct');
+          setStepMsg(null);
+          completeOthelloPuzzle(selectedPuzzle.id);
+          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 },
+            colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'] });
+        }
+      } else {
+        setResult('wrong');
+      }
     }
-  }, [selectedPuzzle, result, boardState]);
+  }, [selectedPuzzle, result, boardState, currentPlayer, moveStep, stepMsg]);
+
+  const reset = (puzzle) => {
+    setSelectedPuzzle(puzzle);
+    setResult(null); setBoardState(null); setShowHint(false); setMoveStep(0); setStepMsg(null);
+  };
 
   const handleRetry = useCallback(() => {
-    setResult(null);
-    setBoardState(null);
-    setShowHint(false);
+    setResult(null); setBoardState(null); setShowHint(false); setMoveStep(0); setStepMsg(null);
   }, []);
 
   const handleNextPuzzle = useCallback(() => {
     const idx = puzzles.findIndex(p => p.id === selectedPuzzle.id);
-    if (idx < puzzles.length - 1) {
-      setSelectedPuzzle(puzzles[idx + 1]);
-      setResult(null); setBoardState(null); setShowHint(false);
-    } else {
-      setSelectedPuzzle(null);
-    }
+    if (idx < puzzles.length - 1) reset(puzzles[idx + 1]);
+    else setSelectedPuzzle(null);
   }, [selectedPuzzle]);
 
   if (!selectedPuzzle) {
     return (
       <div className={styles.container}>
         <h1 className={styles.title}>🧩 오델로 퍼즐</h1>
-        <p className={styles.subtitle}>최고의 한 수를 찾아봐!</p>
+        <p className={styles.subtitle}>최고의 수를 찾아봐!</p>
         <div className={styles.puzzleList}>
           {puzzles.map((puzzle, index) => {
             const isCompleted = completedPuzzles.includes(puzzle.id);
@@ -99,14 +138,12 @@ export default function OthelloPuzzle({ onBack }) {
               <button
                 key={puzzle.id}
                 className={`${styles.puzzleCard} ${isCompleted ? styles.completed : ''}`}
-                onClick={() => {
-                  setSelectedPuzzle(puzzle);
-                  setResult(null); setBoardState(null); setShowHint(false);
-                }}
+                onClick={() => reset(puzzle)}
                 style={{ animationDelay: `${index * 0.06}s` }}
               >
                 <span className={styles.puzzleNumber}>#{puzzle.id}</span>
                 <span className={styles.puzzleTitle}>{puzzle.title}</span>
+                {puzzle.multiMove && <span className={styles.diffBadge}>⭐⭐</span>}
                 {isCompleted && <span className={styles.checkmark}>✅</span>}
               </button>
             );
@@ -135,7 +172,7 @@ export default function OthelloPuzzle({ onBack }) {
                 key={`${r}-${c}`}
                 className={`${styles.cell} ${validSet.has(`${r}-${c}`) && result !== 'correct' ? styles.validCell : ''}`}
                 onClick={() => handleCellClick(r, c)}
-                disabled={result === 'correct'}
+                disabled={result === 'correct' || !!stepMsg}
               >
                 {cell !== EMPTY && (
                   <div className={`${styles.piece} ${cell === BLACK ? styles.black : styles.white}`} />
@@ -145,6 +182,10 @@ export default function OthelloPuzzle({ onBack }) {
           )}
         </div>
       </div>
+
+      {stepMsg && !result && (
+        <div className={styles.stepMsg}>{stepMsg}</div>
+      )}
 
       {result === 'correct' && (
         <div className={styles.resultCorrect}>
@@ -160,7 +201,7 @@ export default function OthelloPuzzle({ onBack }) {
       )}
 
       <div className={styles.puzzleActions}>
-        {result !== 'correct' && (
+        {result !== 'correct' && !stepMsg && (
           <button className={styles.hintButton} onClick={() => setShowHint(true)}>💡 힌트</button>
         )}
         {result === 'wrong' && (
