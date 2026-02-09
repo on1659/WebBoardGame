@@ -1,3 +1,15 @@
+@media (max-width: 480px) {
+  .container {
+    flex-direction: row !important;
+    align-items: center;
+    padding: var(--spacing-sm) !important;
+    gap: var(--spacing-sm) !important;
+    min-width: unset !important;
+  }
+  .capturedSection { display: none !important; }
+  .turnIndicator { font-size: var(--font-size-md) !important; min-height: unset !important; }
+}
+
 .container {
   display: flex;
   flex-direction: column;
