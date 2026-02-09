@@ -13,6 +13,9 @@ export default function BadukPuzzle({ onBack }) {
   const [solved, setSolved] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [wrong, setWrong] = useState(false);
+  // multiMove 상태
+  const [moveStep, setMoveStep] = useState(0);
+  const [stepMsg, setStepMsg] = useState(null);
   const completedPuzzles = getCompletedBadukPuzzles();
 
   const handlePuzzleSelect = useCallback((puzzle) => {
@@ -21,14 +24,62 @@ export default function BadukPuzzle({ onBack }) {
     setSolved(false);
     setShowHint(false);
     setWrong(false);
+    setMoveStep(0);
+    setStepMsg(null);
   }, []);
 
   const handleCellClick = useCallback((r, c) => {
-    if (solved || !selectedPuzzle) return;
+    if (solved || !selectedPuzzle || stepMsg) return;
 
     // Check occupied
     if (puzzleStones.some(s => s.r === r && s.c === c)) return;
 
+    if (selectedPuzzle.multiMove) {
+      // 2수 퍼즐
+      if (moveStep === 0) {
+        const isCorrect = selectedPuzzle.correct.some(pos => pos.r === r && pos.c === c);
+        if (isCorrect) {
+          let newStones = [...puzzleStones, { r, c, color: BLACK }];
+          // 잡기 처리
+          newStones = removeCaptured(newStones, selectedPuzzle.boardSize, 2);
+          setPuzzleStones(newStones);
+          setStepMsg('좋아! 👏 상대가 응수해요...');
+          setWrong(false);
+          setTimeout(() => {
+            const opMove = selectedPuzzle.opponentMove;
+            let withOp = [...newStones, { r: opMove.r, c: opMove.c, color: opMove.color }];
+            withOp = removeCaptured(withOp, selectedPuzzle.boardSize, 1);
+            setPuzzleStones(withOp);
+            setMoveStep(1);
+            setStepMsg('이제 마지막 한 수!');
+            setTimeout(() => setStepMsg(null), 1500);
+          }, 600);
+        } else {
+          setWrong(true);
+          setTimeout(() => setWrong(false), 1000);
+        }
+      } else {
+        const isCorrect = selectedPuzzle.secondCorrect.some(pos => pos.r === r && pos.c === c);
+        if (isCorrect) {
+          let newStones = [...puzzleStones, { r, c, color: BLACK }];
+          newStones = removeCaptured(newStones, selectedPuzzle.boardSize, 2);
+          setPuzzleStones(newStones);
+          setSolved(true);
+          setWrong(false);
+          completeBadukPuzzle(selectedPuzzle.id);
+          confetti({
+            particleCount: 120, spread: 80, origin: { y: 0.6 },
+            colors: ['#a8d5ba', '#f8bbd9', '#fff59d', '#d1c4e9', '#ffccbc'],
+          });
+        } else {
+          setWrong(true);
+          setTimeout(() => setWrong(false), 1000);
+        }
+      }
+      return;
+    }
+
+    // 1수 퍼즐
     const isCorrect = selectedPuzzle.correct.some(pos => pos.r === r && pos.c === c);
 
     if (isCorrect) {
@@ -56,7 +107,7 @@ export default function BadukPuzzle({ onBack }) {
       setWrong(true);
       setTimeout(() => setWrong(false), 1000);
     }
-  }, [solved, selectedPuzzle, puzzleStones]);
+  }, [solved, selectedPuzzle, puzzleStones, moveStep, stepMsg]);
 
   const handleNextPuzzle = useCallback(() => {
     if (!selectedPuzzle) return;
@@ -89,6 +140,7 @@ export default function BadukPuzzle({ onBack }) {
                 <div className={styles.puzzleInfo}>
                   <span className={styles.puzzleTitle}>퍼즐 {puzzle.id}: {puzzle.title}</span>
                 </div>
+                {puzzle.multiMove && <span className={styles.diffBadge}>⭐⭐</span>}
                 {isCompleted && <span className={styles.star}>🌟</span>}
               </button>
             );
@@ -113,7 +165,7 @@ export default function BadukPuzzle({ onBack }) {
       </div>
 
       <div className={styles.taskText}>
-        {solved ? '🎉 정답이에요! 잘했어요!' : selectedPuzzle.title}
+        {solved ? '🎉 정답이에요! 잘했어요!' : stepMsg || selectedPuzzle.title}
       </div>
 
       <BadukTutorialBoard
@@ -152,6 +204,13 @@ export default function BadukPuzzle({ onBack }) {
       </div>
     </div>
   );
+}
+
+function removeCaptured(stones, size, colorToRemove) {
+  return stones.filter(s => {
+    if (s.color !== colorToRemove) return true;
+    return !isGroupCaptured(stones, s.r, s.c, size);
+  });
 }
 
 function isGroupCaptured(stones, r, c, size) {

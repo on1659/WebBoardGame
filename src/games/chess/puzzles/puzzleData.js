@@ -83,46 +83,46 @@ export const puzzles = [
     hint: 'f7은 약한 칸이야! 퀸으로 공격해봐!',
   },
   // ===== 2수 체크메이트 (⭐⭐) =====
-  // multiMove 퍼즐: 첫 수를 두면 → 상대 자동 응수 → 두 번째 수로 체크메이트
+  // multiMove 퍼즐: 첫 수(체크) → 상대 응수 → 두 번째 수로 체크메이트
+  // chess.js가 상대 응수를 자동 선택, 두 번째 수는 isCheckmate()로 검증
   {
     id: 11,
-    title: '더블 룩 메이트!',
-    description: '룩 2개로 2수 체크메이트! 🏰🏰',
+    title: '퀸 희생! 💥',
+    description: '퀸을 희생해서 룩이 마무리! 2수 메이트!',
     multiMove: true,
-    // 백: Ra7, Rb1, Kg1, f2,g2,h2 / 흑: Kg8, f7,g7,h7
-    // Rb8+ → Rf8(유일한 블록) → Rxf8#
-    fen: '6k1/R4ppp/8/8/8/8/5PPP/1R4K1 w - - 0 1',
-    moves: [{ from: 'b1', to: 'b8' }],
-    hint: '룩으로 8번 줄 체크! 상대가 막으면 다른 룩이 잡아!',
+    // Qe8+! Rxe8(유일한 수), Rxe8#
+    fen: 'r5k1/5ppp/8/8/8/8/4QPPP/4R1K1 w - - 0 1',
+    moves: [{ from: 'e2', to: 'e8' }],
+    hint: '퀸을 e8로 희생! 룩이 잡으면 우리 룩이 마무리해!',
   },
   {
     id: 12,
-    title: '퀸 희생! 💥',
-    description: '퀸을 희생해서 메이트! 대담하게!',
+    title: '퀸으로 킹 몰기!',
+    description: '퀸 체크로 킹을 몰아서 메이트! 👑',
     multiMove: true,
-    // Qa8+! Rxa8 → Re8# (백랭크 메이트)
-    fen: 'r5k1/5ppp/8/8/8/8/Q4PPP/4R1K1 w - - 0 1',
-    moves: [{ from: 'a2', to: 'a8' }],
-    hint: '퀸을 a8로! 상대가 잡아도 룩이 기다리고 있어!',
+    // Qe6+! Kd8→Rh8# 또는 Kb8→Qe8#
+    fen: 'r1k5/ppp5/8/8/8/8/PPP5/1K2Q2R w - - 0 1',
+    moves: [{ from: 'e1', to: 'e6' }],
+    hint: '퀸으로 e6 체크! 킹이 어디로 가든 잡을 수 있어!',
   },
   {
     id: 13,
-    title: '킹 몰아넣기!',
-    description: '킹을 구석으로 몰아서 메이트! 👑',
+    title: '퀸 + 룩 콤보!',
+    description: '퀸 체크 후 룩이 도와줘! 🤝',
     multiMove: true,
-    // Qh7+! Kf8 → Qf7# (또는 Qh8#)
-    fen: '5k2/5p2/8/8/8/8/5PPQ/6K1 w - - 0 1',
-    moves: [{ from: 'h2', to: 'h8' }],
-    hint: '퀸으로 h8 체크! 킹이 도망가면 마무리!',
+    // Qe6+! Kh8→Qc8# 또는 Kf8→Qe8# (Re1이 e-파일 지원)
+    fen: '6k1/6pp/5Q2/8/8/8/5PPP/4R1K1 w - - 0 1',
+    moves: [{ from: 'f6', to: 'e6' }],
+    hint: '퀸을 e6로! 킹이 도망가면 마지막 한 수!',
   },
   {
     id: 14,
-    title: '백랭크 콤보!',
-    description: '백랭크 약점을 이용한 2수 메이트! 🎯',
+    title: '비숍의 함정! ⛪',
+    description: '비숍 체크로 킹을 가두고 퀸이 마무리!',
     multiMove: true,
-    // Re8+! Rxe8 → Rxe8# (더블 룩 백랭크)
-    fen: 'r3r1k1/5ppp/8/8/8/8/5PPP/2R1R1K1 w - - 0 1',
-    moves: [{ from: 'e1', to: 'e8' }],
-    hint: 'e줄 룩으로 체크! 잡으면 다른 룩이!',
+    // Bh6+! Kh8(유일한 수), Qd8#
+    fen: '6k1/5pBp/8/6Q1/8/8/6PP/6K1 w - - 0 1',
+    moves: [{ from: 'g7', to: 'h6' }],
+    hint: '비숍으로 h6 체크! 킹이 구석에 갇히면 퀸이!',
   },
 ];

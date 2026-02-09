@@ -55,6 +55,7 @@
 }
 
 .star { font-size: 28px; animation: bounce 1s ease infinite; }
+.diffBadge { font-size: 12px; background: linear-gradient(135deg, #fff3cd, #ffeeba); padding: 2px 6px; border-radius: 8px; margin-left: 4px; }
 
 .backButton {
   margin-top: var(--spacing-md);
