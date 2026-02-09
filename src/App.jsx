@@ -15,7 +15,7 @@ import StatsPage from './components/StatsPage';
 import { useState, useCallback, useEffect } from 'react';
 
 function AppInner() {
-  const { user, logout } = useUser();
+  const { user, logout, autoLoginDone } = useUser();
   const [currentGame, setCurrentGame] = useState(null);
   const [showProgress, setShowProgress] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -71,6 +71,15 @@ function AppInner() {
       setShowProgress(true);
     }
   }, [user]);
+
+  // 자동 로그인 중 로딩
+  if (!autoLoginDone) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '32px' }}>
+        🎮 로딩 중...
+      </div>
+    );
+  }
 
   // 로그인 필요할 때
   if (showLogin && !user) {

@@ -35,7 +35,7 @@ export default function ProfileScreen({ onBack }) {
     try {
       const user = await loginUserByName(name.trim(), p);
       saveRecentName(name.trim());
-      login(user);
+      login(user, { name: name.trim(), pin: p });
     } catch (e) {
       setError('이름이나 암호가 틀렸어요 😢');
       setPin('');
@@ -48,7 +48,7 @@ export default function ProfileScreen({ onBack }) {
     try {
       const user = await createUser(name.trim(), p);
       saveRecentName(name.trim());
-      login(user);
+      login(user, { name: name.trim(), pin: p });
     } catch (e) {
       setError(e.message);
       setPin('');
