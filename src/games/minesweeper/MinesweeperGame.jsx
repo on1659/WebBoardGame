@@ -206,6 +206,26 @@ export default function MinesweeperGame({ onBack }) {
     setQuestioned(nq);
   }, [gameState, flagged, questioned, revealed]);
 
+  // 숫자 칸 하이라이트 (주변 범위 표시)
+  const [highlight, setHighlight] = useState(new Set());
+
+  const handleHighlight = useCallback((idx) => {
+    if (gameState !== 'playing') return;
+    const size = sizeRef.current;
+    if (!revealed.has(idx) || board[idx] <= 0) { setHighlight(new Set()); return; }
+    const r = Math.floor(idx / size), c = idx % size;
+    const cells = new Set();
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = r+dr, nc = c+dc;
+        if (nr >= 0 && nr < size && nc >= 0 && nc < size && !revealed.has(nr*size+nc))
+          cells.add(nr*size+nc);
+      }
+    setHighlight(cells);
+  }, [gameState, revealed, board]);
+
+  const clearHighlight = useCallback(() => setHighlight(new Set()), []);
+
   const formatTime = (s) => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 
   if (!difficulty) {
@@ -268,13 +288,18 @@ export default function MinesweeperGame({ onBack }) {
           } else if (questioned.has(idx)) {
             content = '❓';
           }
+          const isHighlighted = highlight.has(idx);
           return (
             <button
               key={idx}
-              className={`${styles.cell} ${isRevealed ? styles.revealed : styles.hidden}`}
+              className={`${styles.cell} ${isRevealed ? styles.revealed : styles.hidden} ${isHighlighted ? styles.highlighted : ''}`}
               style={cellStyle}
               onClick={() => handleClick(idx)}
               onContextMenu={(e) => { e.preventDefault(); handleLongPress(idx); }}
+              onMouseEnter={() => handleHighlight(idx)}
+              onMouseLeave={clearHighlight}
+              onTouchStart={() => { if (isRevealed && board[idx] > 0) handleHighlight(idx); }}
+              onTouchEnd={clearHighlight}
             >
               {content}
             </button>

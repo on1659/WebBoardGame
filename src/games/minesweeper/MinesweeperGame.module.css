@@ -133,3 +133,9 @@
   .backBtn, .restartBtn { min-height: 44px; }
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.highlighted {
+  background: #fff9c4 !important;
+  box-shadow: inset 0 0 0 2px #ffd54f;
+  transition: background 0.15s;
+}
