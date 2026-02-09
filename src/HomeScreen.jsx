@@ -7,6 +7,18 @@ const GAME_NAMES = {
   connect4: '사목', memory: '카드 짝맞추기', sudoku: '미니 스도쿠', minesweeper: '미니 지뢰찾기'
 };
 
+const DIFF_LABELS = {
+  easy: '🐣 쉬움', medium: '🐱 보통', hard: '🦁 어려움'
+};
+
+function getSaveDifficulty(activeSave) {
+  if (!activeSave?.game_state) return null;
+  const state = typeof activeSave.game_state === 'string'
+    ? JSON.parse(activeSave.game_state)
+    : activeSave.game_state;
+  return state.difficulty || null;
+}
+
 export default function HomeScreen({ profileName, userId, onSelectGame, onLogout, onShowProgress, onLogin, onShowLeaderboard, onShowStats, isLoggedIn }) {
   const [chessDesc, setChessDesc] = useState('말을 움직여서 왕을 잡아요!');
   const [activeSave, setActiveSave] = useState(null); // { game_type }
@@ -111,7 +123,11 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
             <span className={styles.gameEmoji}>{game.emoji}</span>
             <span className={styles.gameName}>{game.name}</span>
             <span className={styles.gameDesc}>{game.description}</span>
-            {game.available && activeSave?.game_type === game.id && <span className={styles.resumeBadge}>▶️ 이어하기</span>}
+            {game.available && activeSave?.game_type === game.id && (
+              <span className={styles.resumeBadge}>
+                ▶️ 이어하기{getSaveDifficulty(activeSave) ? ` (${DIFF_LABELS[getSaveDifficulty(activeSave)] || getSaveDifficulty(activeSave)})` : ''}
+              </span>
+            )}
             {!game.available && <span className={styles.comingSoonBadge}>🔜 준비 중</span>}
           </button>
         ))}
@@ -126,6 +142,9 @@ export default function HomeScreen({ profileName, userId, onSelectGame, onLogout
             <h2 className={styles.modalTitle}>🎮 잠깐!</h2>
             <p className={styles.modalDesc}>
               <strong>{GAME_NAMES[activeSave.game_type]}</strong> 이어하기가 있어요!
+              {getSaveDifficulty(activeSave) && (
+                <><br/><span style={{fontSize:'16px',color:'#666'}}>난이도: {DIFF_LABELS[getSaveDifficulty(activeSave)] || getSaveDifficulty(activeSave)}</span></>
+              )}
             </p>
             <p className={styles.modalSub}>새 게임을 시작하면 저장된 게임이 사라져요</p>
             <div className={styles.modalButtons}>

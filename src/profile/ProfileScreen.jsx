@@ -66,7 +66,7 @@ export default function ProfileScreen({ onBack }) {
       </div>
       {error && <p className={styles.error}>{error}</p>}
       <div className={styles.numGrid}>
-        {[0,1,2,3,4,5,6,7,8,9].map(n => (
+        {[1,2,3,4,5,6,7,8,9].map(n => (
           <button key={n} className={styles.numBtn} disabled={pin.length >= 4} onClick={() => {
             const newPin = pin + n;
             setPin(newPin);
@@ -77,6 +77,14 @@ export default function ProfileScreen({ onBack }) {
           }}>{n}</button>
         ))}
         <button className={styles.numBtn} onClick={() => { setPin(''); setError(''); }}>🗑️</button>
+        <button className={styles.numBtn} disabled={pin.length >= 4} onClick={() => {
+          const newPin = pin + '0';
+          setPin(newPin);
+          setError('');
+          if (newPin.length === 4) {
+            setTimeout(() => onComplete(newPin), 200);
+          }
+        }}>0</button>
         <button className={`${styles.numBtn} ${styles.confirmBtn}`} disabled={pin.length !== 4} onClick={() => onComplete(pin)}>✅</button>
       </div>
     </div>

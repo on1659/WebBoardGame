@@ -173,7 +173,7 @@ app.post('/api/game-save', async (req, res) => {
 app.get('/api/game-save/:userId', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT game_type, updated_at FROM game_saves WHERE user_id=$1 LIMIT 1',
+      'SELECT game_type, game_state, updated_at FROM game_saves WHERE user_id=$1 LIMIT 1',
       [req.params.userId]
     );
     if (rows.length === 0) return res.json(null);
