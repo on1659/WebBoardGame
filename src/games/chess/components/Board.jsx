@@ -51,29 +51,16 @@ export default function Board({
     return result;
   }, [boardState, selectedSquare, validMoveSquares, captureSquares, kingSquare, isCheck, lastMove, showHighlights, hintMove]);
 
-  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
-
   return (
-    <div className={styles.boardWrapper}>
-      <div className={styles.rankLabels}>
-        {ranks.map(r => <span key={r} className={styles.label}>{r}</span>)}
-      </div>
-      <div className={styles.boardInner}>
-        <div className={`${styles.board} ${isAiThinking ? styles.thinking : ''}`}>
-          {squares.map(sq => (
-            <Square
-              key={sq.square}
-              {...sq}
-              onClick={() => onSquareClick(sq.square)}
-              pieceStyle={pieceStyle}
-            />
-          ))}
-        </div>
-        <div className={styles.fileLabels}>
-          {files.map(f => <span key={f} className={styles.label}>{f}</span>)}
-        </div>
-      </div>
+    <div className={`${styles.board} ${isAiThinking ? styles.thinking : ''}`}>
+      {squares.map(sq => (
+        <Square
+          key={sq.square}
+          {...sq}
+          onClick={() => onSquareClick(sq.square)}
+          pieceStyle={pieceStyle}
+        />
+      ))}
     </div>
   );
 }

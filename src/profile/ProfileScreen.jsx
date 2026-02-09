@@ -29,10 +29,11 @@ export default function ProfileScreen({ onBack }) {
     setRecentNames(getRecentNames());
   }, []);
 
-  const handleLogin = async () => {
-    if (pin.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
+  const handleLogin = async (pinOverride) => {
+    const p = pinOverride || pin;
+    if (p.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
     try {
-      const user = await loginUserByName(name.trim(), pin);
+      const user = await loginUserByName(name.trim(), p);
       saveRecentName(name.trim());
       login(user);
     } catch (e) {
@@ -41,10 +42,11 @@ export default function ProfileScreen({ onBack }) {
     }
   };
 
-  const handleCreate = async () => {
-    if (pin.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
+  const handleCreate = async (pinOverride) => {
+    const p = pinOverride || pin;
+    if (p.length !== 4) { setError('숫자 4개를 눌러줘! 🔢'); return; }
     try {
-      const user = await createUser(name.trim(), pin);
+      const user = await createUser(name.trim(), p);
       saveRecentName(name.trim());
       login(user);
     } catch (e) {
@@ -53,30 +55,38 @@ export default function ProfileScreen({ onBack }) {
     }
   };
 
-  const numPad = (onComplete) => (
-    <div className={styles.pinSection}>
-      <div className={styles.pinDisplay}>
-        {[0,1,2,3].map(i => (
-          <span key={i} className={`${styles.pinDot} ${pin[i] ? styles.filled : ''}`}>
-            {pin[i] ? '⭐' : '○'}
-          </span>
-        ))}
+  const numPad = (onComplete) => {
+    const addDigit = (n) => {
+      if (pin.length < 4) {
+        const newPin = pin + n;
+        setPin(newPin);
+        setError('');
+        if (newPin.length === 4) {
+          setTimeout(() => onComplete(newPin), 150);
+        }
+      }
+    };
+    return (
+      <div className={styles.pinSection}>
+        <div className={styles.pinDisplay}>
+          {[0,1,2,3].map(i => (
+            <span key={i} className={`${styles.pinDot} ${pin[i] ? styles.filled : ''}`}>
+              {pin[i] ? '⭐' : '○'}
+            </span>
+          ))}
+        </div>
+        {error && <p className={styles.error}>{error}</p>}
+        <div className={styles.numGrid}>
+          {[1,2,3,4,5,6,7,8,9].map(n => (
+            <button key={n} className={styles.numBtn} onClick={() => addDigit(n)}>{n}</button>
+          ))}
+          <button className={styles.numBtn} onClick={() => { setPin(''); setError(''); }}>🗑️</button>
+          <button className={styles.numBtn} onClick={() => addDigit(0)}>0</button>
+          <button className={`${styles.numBtn} ${styles.confirmBtn}`} onClick={() => onComplete()}>✅</button>
+        </div>
       </div>
-      {error && <p className={styles.error}>{error}</p>}
-      <div className={styles.numGrid}>
-        {[1,2,3,4,5,6,7,8,9].map(n => (
-          <button key={n} className={styles.numBtn} onClick={() => {
-            if (pin.length < 4) { setPin(p => p + n); setError(''); }
-          }}>{n}</button>
-        ))}
-        <button className={styles.numBtn} onClick={() => { setPin(''); setError(''); }}>🗑️</button>
-        <button className={styles.numBtn} onClick={() => {
-          if (pin.length < 4) { setPin(p => p + '0'); setError(''); }
-        }}>0</button>
-        <button className={`${styles.numBtn} ${styles.confirmBtn}`} onClick={onComplete}>✅</button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   // Step 1: Choose login or signup
   if (step === 'choose') {
