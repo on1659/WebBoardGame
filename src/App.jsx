@@ -54,7 +54,10 @@ function AppInner() {
     setShowProgress(false);
   }, [logout]);
 
-  const handleSelectGame = useCallback((game) => {
+  const [skipResume, setSkipResume] = useState(false);
+
+  const handleSelectGame = useCallback((game, options) => {
+    setSkipResume(options?.skipResume || false);
     if (!user) {
       setCurrentGame(game);
       setShowLogin(true);
@@ -92,55 +95,55 @@ function AppInner() {
   }
 
   if (showProgress && user) {
-    return <ProgressPage profileName={user.name} userId={user.id} onBack={handleBack} />;
+    return <ProgressPage profileName={user.name} userId={user.id} onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (showStats) {
-    return <StatsPage onBack={handleBack} />;
+    return <StatsPage onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (showLeaderboard) {
-    return <Leaderboard onBack={handleBack} />;
+    return <Leaderboard onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'memory') {
     if (!user) { setShowLogin(true); return null; }
-    return <MemoryGame onBack={handleBack} />;
+    return <MemoryGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'sudoku') {
     if (!user) { setShowLogin(true); return null; }
-    return <SudokuGame onBack={handleBack} />;
+    return <SudokuGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'minesweeper') {
     if (!user) { setShowLogin(true); return null; }
-    return <MinesweeperGame onBack={handleBack} />;
+    return <MinesweeperGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'chess') {
     if (!user) { setShowLogin(true); return null; }
-    return <ChessGame onBack={handleBack} />;
+    return <ChessGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'gomoku') {
     if (!user) { setShowLogin(true); return null; }
-    return <GomokuGame onBack={handleBack} />;
+    return <GomokuGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'othello') {
     if (!user) { setShowLogin(true); return null; }
-    return <OthelloGame onBack={handleBack} />;
+    return <OthelloGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'connect4') {
     if (!user) { setShowLogin(true); return null; }
-    return <Connect4Game onBack={handleBack} />;
+    return <Connect4Game onBack={handleBack} skipResume={skipResume} />;
   }
 
   if (currentGame === 'baduk') {
     if (!user) { setShowLogin(true); return null; }
-    return <BadukGame onBack={handleBack} />;
+    return <BadukGame onBack={handleBack} skipResume={skipResume} />;
   }
 
   return (

@@ -49,6 +49,11 @@ export async function saveGame(userId, gameType, gameState) {
   return res.json();
 }
 
+export async function getActiveSave(userId) {
+  const res = await fetch(`${API}/game-save/${userId}`);
+  return res.json();
+}
+
 export async function loadGame(userId, gameType) {
   const res = await fetch(`${API}/game-save/${userId}/${gameType}`);
   return res.json();

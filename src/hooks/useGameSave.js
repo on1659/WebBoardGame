@@ -12,7 +12,7 @@ import { saveGame, loadGame, deleteGame } from '../profile/api';
  * @param {boolean} options.gameOver - whether the game is over (delete save when true)
  * @param {number} options.debounceMs - debounce delay, default 1000
  */
-export function useGameSave(gameType, { getState, onResume, gameStarted, gameOver, debounceMs = 1000 }) {
+export function useGameSave(gameType, { getState, onResume, gameStarted, gameOver, debounceMs = 1000, skipResume = false }) {
   const { user } = useUser();
   const [savedState, setSavedState] = useState(null);
   const [showResumeModal, setShowResumeModal] = useState(false);
@@ -23,6 +23,12 @@ export function useGameSave(gameType, { getState, onResume, gameStarted, gameOve
   // Check for saved game on mount
   useEffect(() => {
     if (!user?.id || checked) return;
+    if (skipResume) {
+      // 홈에서 "새 게임" 선택 → 세이브 무시
+      deleteGame(user.id, gameType).catch(() => {});
+      setChecked(true);
+      return;
+    }
     loadGame(user.id, gameType).then(data => {
       if (data && data.game_state) {
         setSavedState(data.game_state);

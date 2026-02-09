@@ -257,7 +257,7 @@ function isStarPoint(r, c, size) {
   return false;
 }
 
-export default function BadukGame({ onBack }) {
+export default function BadukGame({ onBack, skipResume }) {
   const [mode, setMode] = useState(null); // null=setup, 'tutorial', 'puzzle'
   const [boardSize, setBoardSize] = useState(9);
   const [board, setBoard] = useState(() => createBoard(9));
@@ -280,7 +280,7 @@ export default function BadukGame({ onBack }) {
   const endTrackingRef = useRef(endTracking);
   endTrackingRef.current = endTracking;
 
-  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('baduk', {
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('baduk', { skipResume,
     getState: () => ({
       board: board.map(r => [...r]), currentPlayer, boardSize, difficulty,
       koPoint, capturedBlack, capturedWhite, consecutivePasses,

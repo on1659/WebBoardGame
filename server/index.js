@@ -143,13 +143,18 @@ app.post('/api/progress', async (req, res) => {
   }
 });
 
-// Save game state
+// Save game state (only 1 save per user across all games)
 app.post('/api/game-save', async (req, res) => {
   const { user_id, game_type, game_state } = req.body;
   if (!user_id || !game_type || !game_state) {
     return res.status(400).json({ error: 'Missing fields' });
   }
   try {
+    // Delete any other game saves for this user (only 1 save allowed)
+    await pool.query(
+      'DELETE FROM game_saves WHERE user_id=$1 AND game_type!=$2',
+      [user_id, game_type]
+    );
     const { rows } = await pool.query(
       `INSERT INTO game_saves (user_id, game_type, game_state)
        VALUES ($1, $2, $3)
@@ -158,6 +163,20 @@ app.post('/api/game-save', async (req, res) => {
        RETURNING *`,
       [user_id, game_type, JSON.stringify(game_state)]
     );
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Get user's current save (any game)
+app.get('/api/game-save/:userId', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT game_type, updated_at FROM game_saves WHERE user_id=$1 LIMIT 1',
+      [req.params.userId]
+    );
+    if (rows.length === 0) return res.json(null);
     res.json(rows[0]);
   } catch (e) {
     res.status(500).json({ error: e.message });

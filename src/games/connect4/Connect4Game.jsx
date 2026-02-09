@@ -77,7 +77,7 @@ function getAiMove(board, difficulty) {
   return bestCols[Math.floor(Math.random()*bestCols.length)];
 }
 
-export default function Connect4Game({ onBack }) {
+export default function Connect4Game({ onBack, skipResume }) {
   const [board, setBoard] = useState(createBoard);
   const [winner, setWinner] = useState(null);
   const [winCells, setWinCells] = useState([]);
@@ -91,7 +91,7 @@ export default function Connect4Game({ onBack }) {
   const isGameOver = !!winner;
   const { startTracking, endTracking } = usePlayTracking(`connect4_${difficulty}`);
 
-  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('connect4', {
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('connect4', { skipResume,
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer: isPlayerTurn ? PLAYER : AI, difficulty }),
     onResume: (state) => {
       setBoard(state.board);

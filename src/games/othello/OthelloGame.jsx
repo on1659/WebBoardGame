@@ -70,7 +70,7 @@ function getAiMove(board, difficulty) {
   return bestMoves[Math.floor(Math.random()*bestMoves.length)];
 }
 
-export default function OthelloGame({ onBack }) {
+export default function OthelloGame({ onBack, skipResume }) {
   const [board, setBoard] = useState(createBoard);
   const [currentPlayer, setCurrentPlayer] = useState(BLACK);
   const [winner, setWinner] = useState(null);
@@ -83,7 +83,7 @@ export default function OthelloGame({ onBack }) {
   const isGameOver = !!winner;
   const { startTracking, endTracking } = usePlayTracking(`othello_${difficulty}`);
 
-  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('othello', {
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('othello', { skipResume,
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer, difficulty }),
     onResume: (state) => {
       setBoard(state.board);

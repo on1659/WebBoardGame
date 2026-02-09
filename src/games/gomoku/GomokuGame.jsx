@@ -138,7 +138,7 @@ function getAiMove(board, difficulty) {
   return bestMoves[Math.floor(Math.random() * bestMoves.length)];
 }
 
-export default function GomokuGame({ onBack }) {
+export default function GomokuGame({ onBack, skipResume }) {
   const [boardSize, setBoardSize] = useState(9);
   const [board, setBoard] = useState(() => createBoard(9));
   const [currentPlayer, setCurrentPlayer] = useState(BLACK);
@@ -153,7 +153,7 @@ export default function GomokuGame({ onBack }) {
   const isGameOver = !!winner;
   const { startTracking, endTracking } = usePlayTracking(`gomoku_${difficulty}`);
 
-  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('gomoku', {
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('gomoku', { skipResume,
     getState: () => ({ board: board.map(r=>[...r]), currentPlayer, boardSize, difficulty, moveHistory: history }),
     onResume: (state) => {
       setBoardSize(state.boardSize);

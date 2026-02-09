@@ -16,7 +16,7 @@ import BlunderModal from './components/BlunderModal';
 import HintDisplay from './components/HintDisplay';
 import styles from './ChessGame.module.css';
 
-export default function ChessGame({ onBack }) {
+export default function ChessGame({ onBack, skipResume }) {
   const [mode, setMode] = useState('menu'); // 'menu' | 'game' | 'tutorial' | 'puzzle'
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showGameOverModal, setShowGameOverModal] = useState(true);
@@ -27,7 +27,7 @@ export default function ChessGame({ onBack }) {
   const isGameOver = game.gameStatus !== 'playing';
   const isGameActive = mode === 'game';
 
-  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('chess', {
+  const { showResumeModal, handleResume, handleNewGame: handleNewFromModal } = useGameSave('chess', { skipResume,
     getState: () => ({
       fen: game.position,
       moveHistory: game.moveHistory,
