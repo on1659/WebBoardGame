@@ -55,38 +55,32 @@ export default function ProfileScreen({ onBack }) {
     }
   };
 
-  const numPad = (onComplete) => {
-    const addDigit = (n) => {
-      if (pin.length < 4) {
-        const newPin = pin + n;
-        setPin(newPin);
-        setError('');
-        if (newPin.length === 4) {
-          setTimeout(() => onComplete(newPin), 150);
-        }
-      }
-    };
-    return (
-      <div className={styles.pinSection}>
-        <div className={styles.pinDisplay}>
-          {[0,1,2,3].map(i => (
-            <span key={i} className={`${styles.pinDot} ${pin[i] ? styles.filled : ''}`}>
-              {pin[i] ? '⭐' : '○'}
-            </span>
-          ))}
-        </div>
-        {error && <p className={styles.error}>{error}</p>}
-        <div className={styles.numGrid}>
-          {[1,2,3,4,5,6,7,8,9].map(n => (
-            <button key={n} className={styles.numBtn} onClick={() => addDigit(n)}>{n}</button>
-          ))}
-          <button className={styles.numBtn} onClick={() => { setPin(''); setError(''); }}>🗑️</button>
-          <button className={styles.numBtn} onClick={() => addDigit(0)}>0</button>
-          <button className={`${styles.numBtn} ${styles.confirmBtn}`} onClick={() => onComplete()}>✅</button>
-        </div>
+  const numPad = (onComplete) => (
+    <div className={styles.pinSection}>
+      <div className={styles.pinDisplay}>
+        {[0,1,2,3].map(i => (
+          <span key={i} className={`${styles.pinDot} ${pin[i] ? styles.filled : ''}`}>
+            {pin[i] ? '⭐' : '○'}
+          </span>
+        ))}
       </div>
-    );
-  };
+      {error && <p className={styles.error}>{error}</p>}
+      <div className={styles.numGrid}>
+        {[0,1,2,3,4,5,6,7,8,9].map(n => (
+          <button key={n} className={styles.numBtn} disabled={pin.length >= 4} onClick={() => {
+            const newPin = pin + n;
+            setPin(newPin);
+            setError('');
+            if (newPin.length === 4) {
+              setTimeout(() => onComplete(newPin), 200);
+            }
+          }}>{n}</button>
+        ))}
+        <button className={styles.numBtn} onClick={() => { setPin(''); setError(''); }}>🗑️</button>
+        <button className={`${styles.numBtn} ${styles.confirmBtn}`} disabled={pin.length !== 4} onClick={() => onComplete(pin)}>✅</button>
+      </div>
+    </div>
+  );
 
   // Step 1: Choose login or signup
   if (step === 'choose') {
