@@ -44,11 +44,11 @@ export const puzzles = [
   },
   {
     id: 6,
-    title: '백 투 더 랭크!',
-    description: '룩으로 마지막 줄 체크메이트! 🎯',
-    fen: '6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1',
-    solution: { from: 'a1', to: 'a8' },
-    hint: '마지막 줄로 룩을 보내봐!',
+    title: '비숍으로 체크메이트!',
+    description: '비숍으로 마지막 길을 막아봐! ⛪',
+    fen: '6k1/5p1p/5QpB/8/8/8/5PPP/6K1 w - - 0 1',
+    solution: { from: 'f6', to: 'g7' },
+    hint: '퀸을 g7로 보내봐! 킹이 도망갈 곳이 없어!',
   },
   {
     id: 7,

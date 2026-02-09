@@ -3,6 +3,7 @@ import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
 import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
+import GomokuPuzzle from './puzzles/GomokuPuzzle';
 import styles from './GomokuGame.module.css';
 
 const EMPTY = 0;
@@ -139,6 +140,7 @@ function getAiMove(board, difficulty) {
 }
 
 export default function GomokuGame({ onBack, skipResume }) {
+  const [mode, setMode] = useState('menu'); // 'menu' | 'game' | 'puzzle'
   const [boardSize, setBoardSize] = useState(9);
   const [board, setBoard] = useState(() => createBoard(9));
   const [currentPlayer, setCurrentPlayer] = useState(BLACK);
@@ -269,6 +271,10 @@ export default function GomokuGame({ onBack, skipResume }) {
     startTracking();
   }, [boardSize, difficulty, startTracking]);
 
+  if (mode === 'puzzle') {
+    return <GomokuPuzzle onBack={() => setMode('menu')} />;
+  }
+
   if (!gameStarted) {
     return (
       <div className={styles.setupScreen}>
@@ -311,6 +317,10 @@ export default function GomokuGame({ onBack, skipResume }) {
 
         <button className={styles.startButton} onClick={() => handleNewGame()}>
           🎮 게임 시작!
+        </button>
+
+        <button className={styles.puzzleButton} onClick={() => setMode('puzzle')}>
+          🧩 퍼즐
         </button>
 
         <button className={styles.backButton} onClick={onBack}>

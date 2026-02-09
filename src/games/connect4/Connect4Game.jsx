@@ -3,6 +3,7 @@ import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
 import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
+import Connect4Puzzle from './puzzles/Connect4Puzzle';
 import styles from './Connect4Game.module.css';
 
 const ROWS = 6, COLS = 7;
@@ -78,6 +79,7 @@ function getAiMove(board, difficulty) {
 }
 
 export default function Connect4Game({ onBack, skipResume }) {
+  const [mode, setMode] = useState('menu');
   const [board, setBoard] = useState(createBoard);
   const [winner, setWinner] = useState(null);
   const [winCells, setWinCells] = useState([]);
@@ -146,6 +148,10 @@ export default function Connect4Game({ onBack, skipResume }) {
 
   const winSet = useMemo(() => new Set(winCells.map(([r,c])=>`${r}-${c}`)), [winCells]);
 
+  if (mode === 'puzzle') {
+    return <Connect4Puzzle onBack={() => setMode('menu')} />;
+  }
+
   if (!gameStarted) {
     return (
       <div className={styles.setup}>
@@ -159,6 +165,7 @@ export default function Connect4Game({ onBack, skipResume }) {
           </div>
         </div>
         <button className={styles.startBtn} onClick={()=>{setGameStarted(true);startTracking();}}>🎮 게임 시작!</button>
+        <button className={styles.puzzleBtn} onClick={() => setMode('puzzle')}>🧩 퍼즐</button>
         <button className={styles.backBtn} onClick={onBack}>🏠 홈으로</button>
       </div>
     );

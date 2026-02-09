@@ -66,13 +66,13 @@ export const puzzles = [
     type: 'escape',
     title: '도망쳐! (1)',
     emoji: '🏃',
-    hint: '⚫흑돌의 활로가 1개! 빈 곳으로 연결해요!',
+    hint: '⚫흑돌의 활로가 1개! 아래쪽으로 도망가요!',
     boardSize: 9,
     board: [
-      {r:4,c:4,color:B},
-      {r:3,c:4,color:W}, {r:5,c:4,color:W}, {r:4,c:3,color:W},
+      {r:3,c:3,color:B},
+      {r:2,c:3,color:W}, {r:3,c:2,color:W}, {r:3,c:4,color:W},
     ],
-    correct: [{r:4,c:5}],
+    correct: [{r:4,c:3}],
   },
   {
     id: 6,
@@ -144,6 +144,5 @@ export const puzzles = [
       {r:8,c:3,color:B},
     ],
     correct: [{r:8,c:4}],
-    // Actually let's make this simpler
   },
 ];

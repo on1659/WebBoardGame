@@ -3,6 +3,7 @@ import confetti from 'canvas-confetti';
 import { useGameSave } from '../../hooks/useGameSave';
 import { usePlayTracking } from '../../hooks/usePlayTracking';
 import ResumeModal from '../../components/ResumeModal';
+import OthelloPuzzle from './puzzles/OthelloPuzzle';
 import styles from './OthelloGame.module.css';
 
 const SIZE = 8;
@@ -71,6 +72,7 @@ function getAiMove(board, difficulty) {
 }
 
 export default function OthelloGame({ onBack, skipResume }) {
+  const [mode, setMode] = useState('menu');
   const [board, setBoard] = useState(createBoard);
   const [currentPlayer, setCurrentPlayer] = useState(BLACK);
   const [winner, setWinner] = useState(null);
@@ -191,6 +193,10 @@ export default function OthelloGame({ onBack, skipResume }) {
     setAiThinking(false); setFlipping(new Set()); setLastMove(null);
   }, []);
 
+  if (mode === 'puzzle') {
+    return <OthelloPuzzle onBack={() => setMode('menu')} />;
+  }
+
   if (!gameStarted) {
     return (
       <div className={styles.setup}>
@@ -204,6 +210,7 @@ export default function OthelloGame({ onBack, skipResume }) {
           </div>
         </div>
         <button className={styles.startBtn} onClick={()=>{setGameStarted(true);startTracking();}}>🎮 게임 시작!</button>
+        <button className={styles.puzzleBtn} onClick={() => setMode('puzzle')}>🧩 퍼즐</button>
         <button className={styles.backBtn} onClick={onBack}>🏠 홈으로</button>
       </div>
     );
