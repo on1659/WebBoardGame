@@ -15,12 +15,20 @@ const NUM_COLORS = ['','#1976d2','#388e3c','#d32f2f','#7b1fa2','#ff8f00','#0097a
 function createBoard(size, mines, safeIdx) {
   const total = size * size;
   const board = Array(total).fill(0);
-  const positions = Array.from({length: total}, (_,i) => i).filter(i => i !== safeIdx);
+  // 첫 클릭 + 주변 8칸 모두 안전
+  const safeR = Math.floor(safeIdx / size), safeC = safeIdx % size;
+  const safeSet = new Set();
+  for (let dr = -1; dr <= 1; dr++)
+    for (let dc = -1; dc <= 1; dc++) {
+      const nr = safeR+dr, nc = safeC+dc;
+      if (nr >= 0 && nr < size && nc >= 0 && nc < size) safeSet.add(nr*size+nc);
+    }
+  const positions = Array.from({length: total}, (_,i) => i).filter(i => !safeSet.has(i));
   for (let i = positions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
-  positions.slice(0, mines).forEach(p => board[p] = -1);
+  positions.slice(0, Math.min(mines, positions.length)).forEach(p => board[p] = -1);
   // Count neighbors
   for (let i = 0; i < total; i++) {
     if (board[i] === -1) continue;
@@ -43,6 +51,7 @@ export default function MinesweeperGame({ onBack }) {
   const [board, setBoard] = useState([]);
   const [revealed, setRevealed] = useState(new Set());
   const [flagged, setFlagged] = useState(new Set());
+  const [questioned, setQuestioned] = useState(new Set());
   const [gameState, setGameState] = useState('playing'); // playing|won|lost
   const [time, setTime] = useState(0);
   const [flagMode, setFlagMode] = useState(false);
@@ -58,6 +67,7 @@ export default function MinesweeperGame({ onBack }) {
     setBoard(Array(size*size).fill(0));
     setRevealed(new Set());
     setFlagged(new Set());
+    setQuestioned(new Set());
     setGameState('playing');
     setTime(0);
     setFlagMode(false);
@@ -96,11 +106,64 @@ export default function MinesweeperGame({ onBack }) {
     const mines = minesRef.current;
 
     if (flagMode) {
+      if (revealed.has(idx)) return;
+      // 순환: 빈칸 → 깃발 → 물음표 → 빈칸
       const nf = new Set(flagged);
-      if (nf.has(idx)) nf.delete(idx); else if (!revealed.has(idx)) nf.add(idx);
+      const nq = new Set(questioned);
+      if (nf.has(idx)) {
+        nf.delete(idx);
+        nq.add(idx);
+      } else if (nq.has(idx)) {
+        nq.delete(idx);
+      } else {
+        nf.add(idx);
+      }
       setFlagged(nf);
+      setQuestioned(nq);
       return;
     }
+
+    // 코드(chord): 이미 열린 숫자 칸 클릭 → 주변 깃발 수 = 숫자면 나머지 자동 오픈
+    if (revealed.has(idx) && board[idx] > 0) {
+      const r = Math.floor(idx / size), c = idx % size;
+      let flagCount = 0;
+      const neighbors = [];
+      for (let dr = -1; dr <= 1; dr++)
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = r+dr, nc = c+dc;
+          if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+            const ni = nr*size+nc;
+            if (flagged.has(ni)) flagCount++;
+            else if (!revealed.has(ni)) neighbors.push(ni);
+          }
+        }
+      if (flagCount === board[idx] && neighbors.length > 0) {
+        let newRev = new Set(revealed);
+        let hitMine = false;
+        for (const ni of neighbors) {
+          if (board[ni] === -1) { hitMine = true; break; }
+          newRev = revealCell(ni, board, newRev);
+        }
+        if (hitMine) {
+          clearInterval(timerRef.current);
+          setRevealed(new Set(Array.from({length: size*size}, (_,i) => i)));
+          setGameState('lost');
+          endTracking('lose');
+        } else {
+          setRevealed(newRev);
+          const nonMines = size * size - mines;
+          if (newRev.size >= nonMines) {
+            clearInterval(timerRef.current);
+            setGameState('won');
+            endTracking('win');
+            if (user) submitScore(user.id, `minesweeper_${difficulty}`, time, 'time').catch(() => {});
+          }
+        }
+      }
+      return;
+    }
+
     if (flagged.has(idx) || revealed.has(idx)) return;
 
     let brd = board;
@@ -130,14 +193,18 @@ export default function MinesweeperGame({ onBack }) {
       endTracking('win');
       if (user) submitScore(user.id, `minesweeper_${difficulty}`, time, 'time').catch(() => {});
     }
-  }, [gameState, flagMode, flagged, revealed, board, firstClick, revealCell, time, user]);
+  }, [gameState, flagMode, flagged, questioned, revealed, board, firstClick, revealCell, time, user, difficulty, endTracking]);
 
   const handleLongPress = useCallback((idx) => {
     if (gameState !== 'playing' || revealed.has(idx)) return;
     const nf = new Set(flagged);
-    if (nf.has(idx)) nf.delete(idx); else nf.add(idx);
+    const nq = new Set(questioned);
+    if (nf.has(idx)) { nf.delete(idx); nq.add(idx); }
+    else if (nq.has(idx)) { nq.delete(idx); }
+    else { nf.add(idx); }
     setFlagged(nf);
-  }, [gameState, flagged, revealed]);
+    setQuestioned(nq);
+  }, [gameState, flagged, questioned, revealed]);
 
   const formatTime = (s) => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 
@@ -198,6 +265,8 @@ export default function MinesweeperGame({ onBack }) {
             else if (val > 0) { content = val; cellStyle = { color: NUM_COLORS[val] }; }
           } else if (isFlagged) {
             content = '🚩';
+          } else if (questioned.has(idx)) {
+            content = '❓';
           }
           return (
             <button
