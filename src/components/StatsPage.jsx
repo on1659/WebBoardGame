@@ -3,15 +3,42 @@ import { useUser } from '../profile/UserContext';
 import { fetchStats, fetchGameStats, fetchUserStats } from '../profile/api';
 import styles from './StatsPage.module.css';
 
-const GAME_INFO = {
+const GAME_BASE = {
   chess: { emoji: '♟️', name: '체스' },
   gomoku: { emoji: '⚫', name: '오목' },
   othello: { emoji: '🟢', name: '오델로' },
   connect4: { emoji: '🔴', name: '사목' },
+  baduk: { emoji: '⚪', name: '바둑' },
   memory: { emoji: '🃏', name: '카드 짝맞추기' },
   sudoku: { emoji: '🧩', name: '미니 스도쿠' },
   minesweeper: { emoji: '💣', name: '미니 지뢰찾기' },
+  tictactoe: { emoji: '❌', name: '틱택토' },
 };
+
+const DIFF_NAMES = { easy: '쉬움', medium: '보통', hard: '어려움' };
+
+function parseGameType(gameType) {
+  // baduk_9x9_easy → { base: 'baduk', extra: '9x9', diff: 'easy' }
+  // gomoku_easy → { base: 'gomoku', diff: 'easy' }
+  // chess_medium → { base: 'chess', diff: 'medium' }
+  // memory → { base: 'memory' }
+  const parts = gameType.split('_');
+  const base = parts[0];
+  const info = GAME_BASE[base] || { emoji: '🎮', name: gameType };
+  let label = info.name;
+  // 난이도 찾기
+  const diffPart = parts.find(p => DIFF_NAMES[p]);
+  if (diffPart) label += ` (${DIFF_NAMES[diffPart]})`;
+  // 보드 크기 (바둑)
+  const sizePart = parts.find(p => /^\d+x\d+$/.test(p));
+  if (sizePart) label += ` ${sizePart}`;
+  return { emoji: info.emoji, name: label };
+}
+
+// 호환용
+const GAME_INFO = new Proxy({}, {
+  get(_, key) { return parseGameType(key); }
+});
 
 function formatTime(seconds) {
   if (!seconds) return '-';
